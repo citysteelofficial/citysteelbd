@@ -7,7 +7,11 @@ import path from "path";
 
 export default defineConfig({
   plugins: [
-    tanstackStart(),
+    tanstackStart({
+      deployment: {
+        preset: "vercel",
+      },
+    }),
     react(),
     tailwindcss(),
     tsconfigPaths(),
