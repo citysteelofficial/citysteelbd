@@ -9,10 +9,9 @@ export default defineConfig({
   plugins: [
     tanstackStart({
       deployment: {
-        preset: "vercel",
+        preset: "cloudflare",
       },
     }),
-    react(),
     tailwindcss(),
     tsconfigPaths(),
   ],
