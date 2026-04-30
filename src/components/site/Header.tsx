@@ -1,8 +1,12 @@
-import { Link, useLoaderData } from "@tanstack/react-router";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Menu, X, ChevronDown } from "lucide-react";
-import { Route as rootRoute } from "@/routes/__root";
-import logo from "@/assets/citysteel-logo.jpeg";
+import Image from "next/image";
+import logo from "@/assets/logo.svg";
 
 const nav = [
   { to: "/", label: "Home" },
@@ -14,10 +18,19 @@ const nav = [
   { to: "/contact", label: "Contact" },
 ] as const;
 
-export function Header() {
+interface HeaderProps {
+  productsMenu: any[];
+  servicesMenu: any[];
+}
+
+export function Header({ productsMenu, servicesMenu }: HeaderProps) {
   const [open, setOpen] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
-  const { productsMenu, servicesMenu } = useLoaderData({ from: rootRoute.id });
+  const pathname = usePathname();
+
+  if (pathname.startsWith('/admin')) {
+    return null;
+  }
 
   // Build sub-items for dropdown menus
   const getSubItems = (label: string): any[] => {
@@ -60,16 +73,22 @@ export function Header() {
     setMobileExpanded((prev) => (prev === label ? null : label));
   };
 
+  const isActive = (to: string) => {
+    if (to === "/") return pathname === "/";
+    return pathname.startsWith(to);
+  };
+
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-md">
       <div className="container-x flex h-20 items-center justify-between">
-        <Link to="/" className="group flex items-center" aria-label="City Steel — Home">
-          <img
+        <Link href="/" className="group flex items-center" aria-label="City Steel — Home">
+          <Image
             src={logo}
             alt="City Steel — Building the Future"
-            width={860}
-            height={420}
+            width={180}
+            height={60}
             className="h-12 w-auto transition-transform group-hover:scale-[1.03] sm:h-14"
+            priority
           />
         </Link>
 
@@ -80,7 +99,7 @@ export function Header() {
               const subItems = getSubItems(n.label);
               return (
                 <div key={n.to} className="group relative">
-                  <div className="relative flex cursor-pointer items-center gap-1 px-4 py-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground">
+                  <div className={`relative flex cursor-pointer items-center gap-1 px-4 py-2 text-sm font-semibold uppercase tracking-wider transition-colors hover:text-foreground ${isActive(n.to) ? 'text-foreground' : 'text-muted-foreground'}`}>
                     {n.label} <ChevronDown className="h-3 w-3" />
                   </div>
                   {/* Dropdown Menu */}
@@ -90,8 +109,7 @@ export function Header() {
                         return (
                           <Link
                             key={item.slug || item.title}
-                            to="/projects"
-                            search={{ status: item.slug }}
+                            href={`/projects?status=${item.slug}`}
                             className="px-4 py-3 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                           >
                             {item.title}
@@ -99,14 +117,14 @@ export function Header() {
                         );
                       }
 
-                      const linkTo = n.label === "Products"
+                      const linkHref = n.label === "Products"
                         ? `/products/${item.slug || 'demo'}`
                         : `/services/${item.slug || 'demo'}`;
 
                       return (
                         <Link
                           key={item.slug || item.title}
-                          to={linkTo}
+                          href={linkHref}
                           className="px-4 py-3 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                         >
                           {item.title}
@@ -121,20 +139,17 @@ export function Header() {
             return (
               <Link
                 key={n.to}
-                to={n.to}
-                activeOptions={{ exact: n.to === "/" }}
-                className="relative px-4 py-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground"
-                activeProps={{
-                  className:
-                    "relative px-4 py-2 text-sm font-semibold uppercase tracking-wider text-foreground",
-                }}
+                href={n.to}
+                className={`relative px-4 py-2 text-sm font-semibold uppercase tracking-wider transition-colors hover:text-foreground ${
+                  isActive(n.to) ? "text-foreground" : "text-muted-foreground"
+                }`}
               >
                 {n.label}
               </Link>
             );
           })}
           <Link
-            to="/contact"
+            href="/contact"
             className="ml-4 inline-flex items-center bg-gradient-primary px-5 py-2.5 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-red transition-all hover:scale-105"
           >
             Get Quote
@@ -150,86 +165,118 @@ export function Header() {
         </button>
       </div>
 
-      {/* Mobile Navigation */}
+      {/* Mobile Navigation Drawer Overlay */}
       {open && (
-        <nav className="border-t border-border bg-surface lg:hidden max-h-[calc(100vh-5rem)] overflow-y-auto">
-          <div className="container-x flex flex-col py-4">
-            {nav.map((n) => {
-              if (isDropdown(n.label)) {
-                const subItems = getSubItems(n.label);
-                const isExpanded = mobileExpanded === n.label;
+        <div 
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden transition-opacity" 
+          onClick={() => setOpen(false)}
+        />
+      )}
 
-                return (
-                  <div key={n.to}>
-                    {/* Parent item — toggles sub-menu */}
-                    <button
-                      onClick={() => toggleMobileExpanded(n.label)}
-                      className="flex w-full items-center justify-between border-l-2 border-transparent px-4 py-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground hover:border-primary hover:text-foreground transition-colors"
-                    >
-                      {n.label}
-                      <ChevronDown
-                        className={`h-4 w-4 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
-                      />
-                    </button>
+      {/* Mobile Navigation Drawer */}
+      <nav 
+        className={`fixed inset-y-0 left-0 z-50 w-[280px] max-w-[80vw] bg-background shadow-2xl lg:hidden transform transition-transform duration-300 ease-in-out ${
+          open ? 'translate-x-0' : '-translate-x-full'
+        } overflow-y-auto flex flex-col`}
+      >
+        <div className="flex h-20 shrink-0 items-center justify-between border-b border-border px-6">
+          <Link href="/" onClick={() => setOpen(false)} className="flex items-center">
+            <Image
+              src={logo}
+              alt="City Steel Logo"
+              width={120}
+              height={40}
+              className="h-10 w-auto"
+            />
+          </Link>
+          <button
+            onClick={() => setOpen(false)}
+            className="rounded-full p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
 
-                    {/* Sub-items */}
-                    {isExpanded && (
-                      <div className="ml-4 flex flex-col border-l border-border">
-                        {subItems.map((item: any) => {
-                          if (n.label === "Projects") {
-                            return (
-                              <Link
-                                key={item.slug || item.title}
-                                to="/projects"
-                                search={{ status: item.slug }}
-                                onClick={() => setOpen(false)}
-                                className="px-4 py-2.5 text-xs font-medium uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors"
-                              >
-                                {item.title}
-                              </Link>
-                            );
-                          }
+        <div className="flex flex-col py-4 px-3">
+          {nav.map((n) => {
+            if (isDropdown(n.label)) {
+              const subItems = getSubItems(n.label);
+              const isExpanded = mobileExpanded === n.label;
 
-                          const linkTo = n.label === "Products"
-                            ? `/products/${item.slug || 'demo'}`
-                            : `/services/${item.slug || 'demo'}`;
+              return (
+                <div key={n.to} className="mb-1">
+                  <button
+                    onClick={() => toggleMobileExpanded(n.label)}
+                    className={`flex w-full items-center justify-between rounded-lg px-3 py-3 text-sm font-semibold uppercase tracking-wider transition-colors hover:bg-muted ${isActive(n.to) ? 'text-primary' : 'text-foreground'}`}
+                  >
+                    {n.label}
+                    <ChevronDown
+                      className={`h-4 w-4 transition-transform duration-200 ${isExpanded ? "rotate-180 text-primary" : "text-muted-foreground"}`}
+                    />
+                  </button>
 
+                  {isExpanded && (
+                    <div className="ml-3 mt-1 flex flex-col border-l-2 border-border pl-2">
+                      {subItems.map((item: any) => {
+                        if (n.label === "Projects") {
                           return (
                             <Link
                               key={item.slug || item.title}
-                              to={linkTo}
+                              href={`/projects?status=${item.slug}`}
                               onClick={() => setOpen(false)}
-                              className="px-4 py-2.5 text-xs font-medium uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors"
+                              className="rounded-md px-3 py-2.5 text-xs font-medium uppercase tracking-wider text-muted-foreground hover:bg-muted hover:text-primary transition-colors"
                             >
                               {item.title}
                             </Link>
                           );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                );
-              }
+                        }
 
-              return (
-                <Link
-                  key={n.to}
-                  to={n.to}
-                  onClick={() => setOpen(false)}
-                  className="border-l-2 border-transparent px-4 py-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground hover:border-primary hover:text-foreground"
-                  activeProps={{
-                    className:
-                      "border-l-2 border-primary px-4 py-3 text-sm font-semibold uppercase tracking-wider text-foreground bg-secondary",
-                  }}
-                  activeOptions={{ exact: n.to === "/" }}
-                >
-                  {n.label}
-                </Link>
+                        const linkHref = n.label === "Products"
+                          ? `/products/${item.slug || 'demo'}`
+                          : `/services/${item.slug || 'demo'}`;
+
+                        return (
+                          <Link
+                            key={item.slug || item.title}
+                            href={linkHref}
+                            onClick={() => setOpen(false)}
+                            className="rounded-md px-3 py-2.5 text-xs font-medium uppercase tracking-wider text-muted-foreground hover:bg-muted hover:text-primary transition-colors"
+                          >
+                            {item.title}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               );
-            })}
-          </div>
-        </nav>
-      )}
+            }
+
+            return (
+              <Link
+                key={n.to}
+                href={n.to}
+                onClick={() => setOpen(false)}
+                className={`mb-1 rounded-lg px-3 py-3 text-sm font-semibold uppercase tracking-wider transition-colors hover:bg-muted ${
+                  isActive(n.to) ? "bg-primary/10 text-primary" : "text-foreground"
+                }`}
+              >
+                {n.label}
+              </Link>
+            );
+          })}
+        </div>
+        
+        <div className="mt-auto border-t border-border p-6">
+          <Link
+            href="/contact"
+            onClick={() => setOpen(false)}
+            className="flex w-full items-center justify-center bg-gradient-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-red transition-all hover:scale-105"
+          >
+            Get a Quote
+          </Link>
+        </div>
+      </nav>
     </header>
   );
 }

@@ -1,7 +1,16 @@
-import { Link } from "@tanstack/react-router";
+"use client";
+
+import Link from "next/link";
 import { Mail, Phone, MapPin, Clock } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export function Footer() {
+  const pathname = usePathname();
+
+  if (pathname.startsWith('/admin')) {
+    return null;
+  }
+
   return (
     <footer className="border-t border-[oklch(0.98_0_0/0.1)] bg-gradient-dark text-[oklch(0.85_0_0)]">
       <div className="h-1 stripe-pattern opacity-80" />
@@ -29,22 +38,22 @@ export function Footer() {
         <div>
           <h4 className="mb-4 text-sm font-bold tracking-widest text-primary">EXPLORE</h4>
           <ul className="space-y-2 text-sm text-[oklch(0.7_0_0)]">
-            <li><Link to="/about" className="transition-colors hover:text-[oklch(0.98_0_0)]">About Us</Link></li>
-            <li><Link to="/services" className="transition-colors hover:text-[oklch(0.98_0_0)]">Services</Link></li>
-            <li><Link to="/projects" className="transition-colors hover:text-[oklch(0.98_0_0)]">Our Projects</Link></li>
-            <li><Link to="/blogs" className="transition-colors hover:text-[oklch(0.98_0_0)]">Blog & Insights</Link></li>
-            <li><Link to="/career" className="transition-colors hover:text-[oklch(0.98_0_0)]">Career</Link></li>
+            <li><Link href="/about" className="transition-colors hover:text-[oklch(0.98_0_0)]">About Us</Link></li>
+            <li><Link href="/services" className="transition-colors hover:text-[oklch(0.98_0_0)]">Services</Link></li>
+            <li><Link href="/projects" className="transition-colors hover:text-[oklch(0.98_0_0)]">Our Projects</Link></li>
+            <li><Link href="/blogs" className="transition-colors hover:text-[oklch(0.98_0_0)]">Blog & Insights</Link></li>
+            <li><Link href="/career" className="transition-colors hover:text-[oklch(0.98_0_0)]">Career</Link></li>
           </ul>
         </div>
 
         <div>
           <h4 className="mb-4 text-sm font-bold tracking-widest text-primary">PRODUCTS</h4>
           <ul className="space-y-2 text-sm text-[oklch(0.7_0_0)]">
-            <li><a href="/products/steel-column" className="transition-colors hover:text-[oklch(0.98_0_0)]">Steel Column</a></li>
-            <li><a href="/products/steel-beam" className="transition-colors hover:text-[oklch(0.98_0_0)]">Steel Beam</a></li>
-            <li><a href="/products/purlin" className="transition-colors hover:text-[oklch(0.98_0_0)]">Purlin</a></li>
-            <li><a href="/products/industrial-roof-sheet" className="transition-colors hover:text-[oklch(0.98_0_0)]">Industrial Roof Sheet</a></li>
-            <li><a href="/products/industrial-deck-sheet" className="transition-colors hover:text-[oklch(0.98_0_0)]">Industrial Deck Sheet</a></li>
+            <li><Link href="/products/steel-column" className="transition-colors hover:text-[oklch(0.98_0_0)]">Steel Column</Link></li>
+            <li><Link href="/products/steel-beam" className="transition-colors hover:text-[oklch(0.98_0_0)]">Steel Beam</Link></li>
+            <li><Link href="/products/purlin" className="transition-colors hover:text-[oklch(0.98_0_0)]">Purlin</Link></li>
+            <li><Link href="/products/industrial-roof-sheet" className="transition-colors hover:text-[oklch(0.98_0_0)]">Industrial Roof Sheet</Link></li>
+            <li><Link href="/products/industrial-deck-sheet" className="transition-colors hover:text-[oklch(0.98_0_0)]">Industrial Deck Sheet</Link></li>
           </ul>
         </div>
 
