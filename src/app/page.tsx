@@ -16,8 +16,23 @@ export default async function HomePage() {
     .eq('id', 1)
     .single();
 
+  // Fetch 3 latest dynamic projects from the database
+  const { data: projectsData } = await supabase
+    .from('projects')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(3);
+
   const latestBlogs = data || [];
   const settings = settingsData || null;
+  const latestProjects = projectsData || [];
 
-  return <HomeClient latestBlogs={latestBlogs} settings={settings} />;
+  return (
+    <HomeClient
+      latestBlogs={latestBlogs}
+      settings={settings}
+      latestProjects={latestProjects}
+    />
+  );
 }
+

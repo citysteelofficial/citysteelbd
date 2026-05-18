@@ -90,7 +90,7 @@ export default function AdminHeroSettings() {
             <h3 className="text-xl font-bold border-b pb-2">Main Text</h3>
             
             <div className="space-y-2 pb-2">
-              <label className="text-sm font-medium">Top Small Text</label>
+              <label className="text-sm font-medium">Giant Brand Title & Sub-tag (Format: Title · Subtag)</label>
               <input 
                 required 
                 name="hero_top_text" 
@@ -102,7 +102,7 @@ export default function AdminHeroSettings() {
 
             <div className="grid gap-6 md:grid-cols-2">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Title Line 1</label>
+                <label className="text-sm font-medium">Top Tagline: Prefix Text</label>
                 <input 
                   required 
                   name="hero_title" 
@@ -112,7 +112,7 @@ export default function AdminHeroSettings() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Title Highlight (Red Text)</label>
+                <label className="text-sm font-medium">Top Tagline: Highlight Word (Red)</label>
                 <input 
                   required 
                   name="hero_highlight" 
@@ -122,7 +122,7 @@ export default function AdminHeroSettings() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Title Line 2</label>
+                <label className="text-sm font-medium">Top Tagline: Suffix Text</label>
                 <input 
                   required 
                   name="hero_subtitle" 

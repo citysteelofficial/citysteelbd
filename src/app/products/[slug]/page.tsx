@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { supabase } from '@/lib/supabase';
 import { PageShell, PageHeader } from '@/components/site/PageShell';
-import { ProductGallery } from '@/components/site/ProductGallery';
+import { ProductGrid } from '@/components/site/ProductGrid';
 import Link from 'next/link';
 import { Metadata } from 'next';
 
@@ -50,7 +50,7 @@ export default async function ProductCategoryPage({ params }: Props) {
               </Link>
             </div>
           ) : (
-            <ProductGallery products={products} />
+            <ProductGrid products={products} />
           )}
         </div>
       </section>

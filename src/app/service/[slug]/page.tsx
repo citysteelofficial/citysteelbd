@@ -1,11 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { supabase } from '@/lib/supabase';
 import { PageShell, PageHeader } from '@/components/site/PageShell';
-import Image from 'next/image';
+import { ServiceDetailGallery } from '@/components/site/ServiceDetailGallery';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
-import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -53,54 +51,27 @@ export default async function ServiceDetailsPage({ params }: Props) {
 
       <section className="py-16 md:py-24">
         <div className="container-x">
-          <Link 
-            href={`/services/${service.category}`}
-            className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary mb-8 transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4" /> Back to Services
-          </Link>
-
-          <div className="grid gap-12 lg:grid-cols-2">
-            {/* Image Gallery */}
-            <div className="space-y-4">
-              {images.length > 0 ? (
-                <>
-                  <div className="relative aspect-video w-full overflow-hidden rounded-xl border bg-muted shadow-soft">
-                    <Image
-                      src={images[0]}
-                      alt={service.title}
-                      fill
-                      className="object-cover"
-                      priority
-                    />
-                  </div>
-                  {images.length > 1 && (
-                    <div className="grid grid-cols-4 gap-4">
-                      {images.slice(1).map((img: string, idx: number) => (
-                        <div key={idx} className="relative aspect-square w-full overflow-hidden rounded-lg border bg-muted">
-                          <Image src={img} alt="" fill className="object-cover" />
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </>
-              ) : (
-                <div className="flex aspect-video w-full items-center justify-center rounded-xl border bg-muted text-muted-foreground">
-                  No images available
-                </div>
-              )}
-            </div>
-
+          <div className="space-y-16">
             {/* Content */}
-            <div className="prose prose-slate dark:prose-invert max-w-none">
+            <div className="prose prose-slate dark:prose-invert max-w-4xl leading-relaxed">
               {service.content ? (
                 <div dangerouslySetInnerHTML={{ __html: service.content }} />
               ) : (
-                <p className="text-lg text-muted-foreground leading-relaxed">
+                <p className="text-lg text-muted-foreground">
                   {service.description}
                 </p>
               )}
             </div>
+
+            {/* Full-width Image Gallery */}
+            {images.length > 0 && (
+              <div className="border-t border-border pt-12">
+                <h3 className="font-display text-2xl font-bold uppercase tracking-wider mb-8 text-foreground flex items-center gap-2">
+                  <span className="h-px w-8 bg-primary" /> Service Gallery
+                </h3>
+                <ServiceDetailGallery images={images} serviceTitle={service.title} />
+              </div>
+            )}
           </div>
         </div>
       </section>

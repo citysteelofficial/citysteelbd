@@ -16,6 +16,12 @@ export default function NewProduct() {
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   
+  // Dynamic Specifications State
+  const [specifications, setSpecifications] = useState<{key: string, value: string}[]>([
+    { key: '', value: '' }
+  ]);
+
+  
   const [categories, setCategories] = useState<any[]>([]);
   const [fetchingCats, setFetchingCats] = useState(true);
   
@@ -97,6 +103,16 @@ export default function NewProduct() {
     setPreviews(prev => prev.filter((_, i) => i !== index));
   };
 
+  const addSpecification = () => setSpecifications([...specifications, { key: '', value: '' }]);
+  
+  const removeSpecification = (index: number) => setSpecifications(specifications.filter((_, i) => i !== index));
+  
+  const updateSpecification = (index: number, field: 'key' | 'value', val: string) => {
+    const updated = [...specifications];
+    updated[index][field] = val;
+    setSpecifications(updated);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -113,8 +129,15 @@ export default function NewProduct() {
         }
       }
       
+      const specJson = specifications.reduce((acc, curr) => {
+        if (curr.key.trim() && curr.value.trim()) {
+          acc[curr.key.trim()] = curr.value.trim();
+        }
+        return acc;
+      }, {} as Record<string, string>);
+      
       const { error } = await supabase.from('products').insert([
-        { ...formData, image_url, images }
+        { ...formData, image_url, images, specifications: specJson }
       ]);
       
       if (error) throw error;
@@ -168,6 +191,53 @@ export default function NewProduct() {
           <div className="space-y-2">
             <label className="text-sm font-medium leading-none">Detailed Content (HTML/Text)</label>
             <RichTextEditor value={formData.content} onChange={(val) => setFormData({ ...formData, content: val })} placeholder="Write detailed content here..." />
+          </div>
+
+          {/* Dynamic Specifications */}
+          <div className="space-y-4 border p-4 rounded-lg bg-muted/10">
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-bold leading-none uppercase tracking-widest">Key Specifications</label>
+              <button 
+                type="button" 
+                onClick={addSpecification}
+                className="text-xs bg-primary/10 text-primary hover:bg-primary hover:text-white px-3 py-1.5 rounded-md font-medium transition-colors"
+              >
+                + Add Spec
+              </button>
+            </div>
+            
+            <div className="space-y-3">
+              {specifications.map((spec, index) => (
+                <div key={index} className="flex items-center gap-3">
+                  <div className="flex-1 space-y-1">
+                    <input 
+                      placeholder="e.g. Material Grade" 
+                      value={spec.key} 
+                      onChange={(e) => updateSpecification(index, 'key', e.target.value)} 
+                      className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary" 
+                    />
+                  </div>
+                  <div className="flex-1 space-y-1">
+                    <input 
+                      placeholder="e.g. QA-500W" 
+                      value={spec.value} 
+                      onChange={(e) => updateSpecification(index, 'value', e.target.value)} 
+                      className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary" 
+                    />
+                  </div>
+                  <button 
+                    type="button" 
+                    onClick={() => removeSpecification(index)}
+                    className="h-9 w-9 flex items-center justify-center rounded-md border border-input text-red-500 hover:bg-red-500 hover:text-white transition-colors"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+              {specifications.length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-4">No specifications added yet.</p>
+              )}
+            </div>
           </div>
 
           {/* Multi-Image Upload */}

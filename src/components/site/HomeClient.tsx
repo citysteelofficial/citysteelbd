@@ -19,10 +19,18 @@ import roofImg from "@/assets/project-roof.jpg";
 interface HomeClientProps {
   latestBlogs: any[];
   settings?: any;
+  latestProjects?: any[];
 }
 
-export function HomeClient({ latestBlogs, settings }: HomeClientProps) {
+export function HomeClient({ latestBlogs, settings, latestProjects = [] }: HomeClientProps) {
   const heroRef = useRef<HTMLElement | null>(null);
+
+  const cleanHtml = (htmlString: string | null | undefined): string => {
+    if (!htmlString) return "";
+    return htmlString
+      .replace(/\u00A0/g, " ")
+      .replace(/&nbsp;/g, " ");
+  };
 
   // Subtle mouse-follow parallax on the hero
   useEffect(() => {
@@ -158,16 +166,17 @@ export function HomeClient({ latestBlogs, settings }: HomeClientProps) {
         <div className="container-x grid gap-16 lg:grid-cols-2 lg:items-center">
           <div>
             <div className="mb-4 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.3em] text-primary">
-              <span className="h-px w-10 bg-primary" /> Get to Know Us
+              <span className="h-px w-10 bg-primary" /> {settings?.about_header_title || "Get to Know Us"}
             </div>
             <h2 className="font-display text-5xl font-bold leading-tight lg:text-6xl">
-              Committed to only <span className="text-gradient-red">High Quality Service</span>
+              {settings?.about_story_title || "Committed to only"} <span className="text-gradient-red">{settings?.about_story_highlight || "High Quality Service"}</span>
             </h2>
-            <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
-              City Steel Corporation stands out as a leading provider of steel structures, with
-              its unrivaled expertise, comprehensive services, commitment to innovation, and
-              dedication to client satisfaction.
-            </p>
+            <div 
+              className="prose dark:prose-invert max-w-none text-muted-foreground mt-6 text-lg leading-relaxed break-words"
+              dangerouslySetInnerHTML={{ 
+                __html: cleanHtml(settings?.about_story_p1) || "City Steel Corporation stands out as a leading provider of steel structures, with its unrivaled expertise, comprehensive services, commitment to innovation, and dedication to client satisfaction." 
+              }}
+            />
             <ul className="mt-8 space-y-4">
               {[
                 "Building quality standards that exceed expectations",
@@ -199,14 +208,17 @@ export function HomeClient({ latestBlogs, settings }: HomeClientProps) {
               className="relative h-[520px] w-full object-cover shadow-elegant"
             />
             <div className="absolute -bottom-6 -right-6 bg-gradient-primary p-6 shadow-red">
-              <div className="font-display text-4xl font-black text-primary-foreground">15+</div>
+              <div className="font-display text-4xl font-black text-primary-foreground">
+                {settings?.years_count || "15+"}
+              </div>
               <div className="text-xs font-bold uppercase tracking-widest text-primary-foreground">
-                Years of Mastery
+                {settings?.years_label ? `${settings.years_label} of Mastery` : "Years of Mastery"}
               </div>
             </div>
           </div>
         </div>
       </section>
+
 
       {/* SERVICES */}
       <section className="bg-surface py-24">
@@ -277,31 +289,70 @@ export function HomeClient({ latestBlogs, settings }: HomeClientProps) {
           </div>
 
           <div className="grid gap-6 lg:grid-cols-3">
-            {[
-              { img: warehouseImg, t: "Industrial Warehouse", c: "Chittagong" },
-              { img: factoryImg, t: "Garments Factory", c: "Gazipur" },
-              { img: roofImg, t: "Manufacturing Plant", c: "Dhaka" },
-            ].map((p) => (
-              <div key={p.t} className="group relative overflow-hidden bg-card shadow-soft transition-all hover:shadow-elegant">
-                <div className="relative overflow-hidden">
-                  <Image
-                    src={p.img}
-                    alt={p.t}
-                    width={1280}
-                    height={960}
-                    loading="lazy"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="h-72 w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                </div>
-                <div className="border-t-2 border-primary p-6">
-                  <div className="text-xs font-bold uppercase tracking-widest text-primary">
-                    {p.c}
+            {latestProjects.length > 0 ? (
+              latestProjects.map((p: any) => (
+                <Link 
+                  href={`/project/${p.slug}`}
+                  key={p.id} 
+                  className="group relative overflow-hidden bg-card shadow-soft transition-all hover:shadow-elegant hover:border-primary/30"
+                >
+                  <div className="relative overflow-hidden aspect-[4/3] w-full bg-muted">
+                    {p.image_url ? (
+                      <Image
+                        src={p.image_url}
+                        alt={p.title}
+                        fill
+                        loading="lazy"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full flex-col items-center justify-center text-muted-foreground bg-secondary px-6 text-center space-y-2">
+                        <Building2 className="h-10 w-10 text-muted-foreground/50" />
+                        <span className="font-semibold text-sm">{p.title}</span>
+                      </div>
+                    )}
                   </div>
-                  <h3 className="mt-1 font-display text-2xl font-bold text-foreground">{p.t}</h3>
+                  <div className="border-t-2 border-primary p-6">
+                    {p.location && (
+                      <div className="text-xs font-bold uppercase tracking-widest text-primary">
+                        {p.location}
+                      </div>
+                    )}
+                    <h3 className="mt-1 font-display text-2xl font-bold text-foreground group-hover:text-primary transition-colors duration-300 line-clamp-1">
+                      {p.title}
+                    </h3>
+                  </div>
+                </Link>
+              ))
+            ) : (
+              // Fallback to static items if DB has no projects yet
+              [
+                { img: warehouseImg, t: "Industrial Warehouse", c: "Chittagong" },
+                { img: factoryImg, t: "Garments Factory", c: "Gazipur" },
+                { img: roofImg, t: "Manufacturing Plant", c: "Dhaka" },
+              ].map((p) => (
+                <div key={p.t} className="group relative overflow-hidden bg-card shadow-soft transition-all hover:shadow-elegant">
+                  <div className="relative overflow-hidden">
+                    <Image
+                      src={p.img}
+                      alt={p.t}
+                      width={1280}
+                      height={960}
+                      loading="lazy"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      className="h-72 w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                  </div>
+                  <div className="border-t-2 border-primary p-6">
+                    <div className="text-xs font-bold uppercase tracking-widest text-primary">
+                      {p.c}
+                    </div>
+                    <h3 className="mt-1 font-display text-2xl font-bold text-foreground">{p.t}</h3>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </section>

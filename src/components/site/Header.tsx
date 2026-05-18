@@ -48,15 +48,17 @@ export function Header({ productsMenu = [], servicesMenu = [] }: HeaderProps) {
         { title: "RAFTER", slug: "rafter", isStatic: true },
       ];
     } else if (label === "Services") {
-      return [
-        { title: "Complete Solution to the Steel Structure", slug: "complete-solution" },
-        { title: "Steel Building Product Supply", slug: "product-supply" },
-        { title: "Interior Solution", slug: "interior-solution" },
-        { title: "Architectural Design", slug: "architectural-design" },
-        { title: "Steel Building Product Import", slug: "product-import" },
-        { title: "Structural Design & Drawing", slug: "structural-design" },
-        { title: "Civil Construction", slug: "civil-construction" },
-      ];
+      return servicesMenu.length > 0 
+        ? servicesMenu.map((s: any) => ({ ...s, isDynamicService: true })) 
+        : [
+            { title: "Complete Solution to the Steel Structure", slug: "complete-solution" },
+            { title: "Steel Building Product Supply", slug: "product-supply" },
+            { title: "Interior Solution", slug: "interior-solution" },
+            { title: "Architectural Design", slug: "architectural-design" },
+            { title: "Steel Building Product Import", slug: "product-import" },
+            { title: "Structural Design & Drawing", slug: "structural-design" },
+            { title: "Civil Construction", slug: "civil-construction" },
+          ];
     } else if (label === "Projects") {
       return [
         { title: "ONGOING PROJECT", slug: "ongoing", isStatic: true },
@@ -85,9 +87,9 @@ export function Header({ productsMenu = [], servicesMenu = [] }: HeaderProps) {
           <Image
             src={logo}
             alt="City Steel — Building the Future"
-            width={180}
-            height={60}
-            className="h-12 w-auto transition-transform group-hover:scale-[1.03] sm:h-14"
+            width={240}
+            height={85}
+            className="h-16 w-auto transition-transform group-hover:scale-[1.03] sm:h-20"
             priority
           />
         </Link>
@@ -119,7 +121,9 @@ export function Header({ productsMenu = [], servicesMenu = [] }: HeaderProps) {
 
                       const linkHref = n.label === "Products"
                         ? `/products/${item.slug || 'demo'}`
-                        : `/services/${item.slug || 'demo'}`;
+                        : item.isDynamicService
+                          ? `/service/${item.slug || 'demo'}`
+                          : `/services/${item.slug || 'demo'}`;
 
                       return (
                         <Link
@@ -184,9 +188,9 @@ export function Header({ productsMenu = [], servicesMenu = [] }: HeaderProps) {
             <Image
               src={logo}
               alt="City Steel Logo"
-              width={120}
-              height={40}
-              className="h-10 w-auto"
+              width={160}
+              height={50}
+              className="h-12 w-auto sm:h-14"
             />
           </Link>
           <button
@@ -233,7 +237,9 @@ export function Header({ productsMenu = [], servicesMenu = [] }: HeaderProps) {
 
                         const linkHref = n.label === "Products"
                           ? `/products/${item.slug || 'demo'}`
-                          : `/services/${item.slug || 'demo'}`;
+                          : item.isDynamicService
+                            ? `/service/${item.slug || 'demo'}`
+                            : `/services/${item.slug || 'demo'}`;
 
                         return (
                           <Link

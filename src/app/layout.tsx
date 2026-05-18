@@ -53,7 +53,7 @@ export default async function RootLayout({
   const servicesMenu = servicesRes.data || [];
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`antialiased ${oswald.variable} ${inter.variable}`}>
         <Header productsMenu={productsMenu} servicesMenu={servicesMenu} />
         {children}
