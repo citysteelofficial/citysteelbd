@@ -18,7 +18,7 @@ export default function EditService({ params }: { params: Promise<{ id: string }
   const [newFiles, setNewFiles] = useState<File[]>([]);
   const [newPreviews, setNewPreviews] = useState<string[]>([]);
   const [existingImages, setExistingImages] = useState<string[]>([]);
-  const [service, setService] = useState<any>(null);
+
   
   const [formData, setFormData] = useState({
     title: '', slug: '', category: 'complete-solution',
@@ -34,7 +34,7 @@ export default function EditService({ params }: { params: Promise<{ id: string }
         router.push('/admin/services');
         return;
       }
-      setService(data);
+
       setExistingImages(data.images || (data.image_url ? [data.image_url] : []));
       setFormData({
         title: data.title,

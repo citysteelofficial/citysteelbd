@@ -66,22 +66,35 @@ export function RichTextEditor({ value, onChange, placeholder, className }: Rich
           color: hsl(var(--muted-foreground));
           font-style: normal;
         }
-        /* Fix dark mode text color for editor */
-        .dark .rich-text-container .ql-editor {
-          color: hsl(var(--foreground));
+        /* Fix colors for editor */
+        .rich-text-container .ql-editor {
+          color: var(--foreground);
         }
-        .dark .rich-text-container .ql-picker {
-          color: hsl(var(--foreground));
+        .rich-text-container .ql-picker {
+          color: var(--foreground);
         }
-        .dark .rich-text-container .ql-stroke {
-          stroke: hsl(var(--foreground));
+        .rich-text-container .ql-stroke {
+          stroke: var(--foreground);
         }
-        .dark .rich-text-container .ql-fill {
-          fill: hsl(var(--foreground));
+        .rich-text-container .ql-fill {
+          fill: var(--foreground);
         }
-        .dark .rich-text-container .ql-picker-options {
-          background-color: hsl(var(--background));
-          border-color: hsl(var(--border));
+        .rich-text-container .ql-picker-options {
+          background-color: var(--background);
+          border-color: var(--border);
+        }
+        /* Active states */
+        .rich-text-container .ql-active .ql-stroke {
+          stroke: var(--primary) !important;
+        }
+        .rich-text-container .ql-active .ql-fill {
+          fill: var(--primary) !important;
+        }
+        .rich-text-container .ql-active .ql-picker {
+          color: var(--primary) !important;
+        }
+        .rich-text-container .ql-active .ql-picker-label {
+          color: var(--primary) !important;
         }
       `}</style>
     </div>

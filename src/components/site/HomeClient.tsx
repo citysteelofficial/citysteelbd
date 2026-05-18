@@ -1,8 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useEffect, useRef } from "react";
-import { ArrowRight, Shield, Award, Wrench, Building2, CheckCircle2, Factory, HardHat, Cog, Newspaper } from "lucide-react";
+import React, { useEffect, useRef } from "react";
+import { ArrowRight, Shield, Award, Wrench, Building2, CheckCircle2, Factory, HardHat, Cog, Newspaper, CheckCircle, Home, Truck, Users } from "lucide-react";
+
+const ICONS: Record<string, any> = {
+  Factory, Building2, HardHat, Wrench, Shield, Cog, CheckCircle, Home, Truck, Users, CheckCircle2
+};
 import Link from "next/link";
 import Image from "next/image";
 
@@ -14,9 +18,10 @@ import roofImg from "@/assets/project-roof.jpg";
 
 interface HomeClientProps {
   latestBlogs: any[];
+  settings?: any;
 }
 
-export function HomeClient({ latestBlogs }: HomeClientProps) {
+export function HomeClient({ latestBlogs, settings }: HomeClientProps) {
   const heroRef = useRef<HTMLElement | null>(null);
 
   // Subtle mouse-follow parallax on the hero
@@ -73,32 +78,39 @@ export function HomeClient({ latestBlogs }: HomeClientProps) {
 
         <div className="container-x relative flex min-h-[55vh] flex-col justify-center py-16 lg:py-20">
           <div className="max-w-3xl">
-            <div className="mb-6 inline-flex items-center gap-3 border border-primary/50 bg-[oklch(0.13_0.01_20/0.55)] px-4 py-2 backdrop-blur-md">
+            {/* Tagline above the Brand Name */}
+            <div className="mb-4 inline-flex items-center gap-3 border border-primary/30 bg-[oklch(0.13_0.01_20/0.4)] px-4 py-2 backdrop-blur-md">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary shadow-red" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[oklch(0.98_0_0)]">
-                City Steel Corporation · Est. 2009
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[oklch(0.98_0_0)]">
+                {settings?.hero_title || 'Building The'}{' '}
+                <span className="text-gradient-red">{settings?.hero_highlight || 'Backbone'}</span>{' '}
+                {settings?.hero_subtitle || 'of Modern Industry'}
               </span>
             </div>
 
-            <h1 className="font-display text-3xl font-black leading-[1.05] text-[oklch(0.99_0_0)] sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl">
-              Building The
-              <br />
-              <span className="text-gradient-red">Backbone</span> of
-              <br />
-              Modern Industry
+            {/* Giant Brand Name */}
+            <h1 className="font-display text-4xl font-black uppercase leading-[1.05] text-[oklch(0.99_0_0)] sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl tracking-tight">
+              {settings?.hero_top_text ? settings.hero_top_text.split(' · ')[0] : 'City Steel Corporation'}
             </h1>
 
-            <div className="mt-6 flex items-center gap-3">
-              <span className="h-px w-12 bg-primary" />
-              <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary">
+            {/* Sub-tag / Info */}
+            <div className="mt-4 flex items-center gap-3">
+              <span className="h-px w-8 bg-primary" />
+              {((settings?.hero_top_text && settings.hero_top_text.includes(' · ')) || !settings?.hero_top_text) && (
+                <>
+                  <span className="text-[11px] font-extrabold uppercase tracking-[0.25em] text-primary">
+                    {settings?.hero_top_text ? settings.hero_top_text.split(' · ')[1] : 'Est. 2009'}
+                  </span>
+                  <span className="text-[11px] font-medium text-muted-foreground/40">|</span>
+                </>
+              )}
+              <span className="text-[11px] font-extrabold uppercase tracking-[0.25em] text-muted-foreground">
                 Steel · Precision · Trust
               </span>
             </div>
 
             <p className="mt-6 max-w-xl text-base leading-relaxed text-[oklch(0.85_0_0)] lg:text-lg">
-              From pre-engineered buildings to heavy industrial frameworks — we design,
-              fabricate, and erect world-class steel structures with uncompromising
-              quality across Bangladesh.
+              {settings?.hero_description || 'From pre-engineered buildings to heavy industrial frameworks — we design, fabricate, and erect world-class steel structures with uncompromising quality across Bangladesh.'}
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-4">
@@ -120,10 +132,10 @@ export function HomeClient({ latestBlogs }: HomeClientProps) {
 
             <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-3 border-t border-[oklch(0.98_0_0/0.15)] pt-5">
               {[
-                { n: "500+", l: "Projects" },
-                { n: "15+", l: "Years" },
-                { n: "200+", l: "Clients" },
-                { n: "ISO", l: "Certified" },
+                { n: settings?.projects_count || "500+", l: settings?.projects_label || "Projects" },
+                { n: settings?.years_count || "15+", l: settings?.years_label || "Years" },
+                { n: settings?.clients_count || "200+", l: settings?.clients_label || "Clients" },
+                { n: settings?.certification_count || "ISO", l: settings?.certification_label || "Certified" },
               ].map((s) => (
                 <div key={s.l} className="flex items-baseline gap-1.5">
                   <span className="font-display text-xl font-black text-[oklch(0.99_0_0)]">
@@ -209,26 +221,28 @@ export function HomeClient({ latestBlogs }: HomeClientProps) {
           </div>
 
           <div className="grid gap-px bg-border md:grid-cols-2 lg:grid-cols-3">
-            {[
-              { Icon: Factory, t: "Pre-Engineered Buildings", d: "Custom-designed PEB structures for any industrial use case." },
-              { Icon: Building2, t: "Steel Structure Fabrication", d: "Heavy-duty trusses, frames, and skeletons built to spec." },
-              { Icon: HardHat, t: "Erection & Installation", d: "Expert on-site crews delivering safe, on-time installs." },
-              { Icon: Wrench, t: "Design & Build Package", d: "End-to-end services from blueprint to handover." },
-              { Icon: Shield, t: "Quality Standards", d: "Building quality standards that meet international norms." },
-              { Icon: Cog, t: "Roofing & Cladding", d: "Premium sheets, purlins, and accessories for any roof." },
-            ].map(({ Icon, t, d }) => (
+            {(settings?.what_we_do || [
+              { icon: "Factory", title: "Pre-Engineered Buildings", description: "Custom-designed PEB structures for any industrial use case." },
+              { icon: "Building2", title: "Steel Structure Fabrication", description: "Heavy-duty trusses, frames, and skeletons built to spec." },
+              { icon: "HardHat", title: "Erection & Installation", description: "Expert on-site crews delivering safe, on-time installs." },
+              { icon: "Wrench", title: "Design & Build Package", description: "End-to-end services from blueprint to handover." },
+              { icon: "Shield", title: "Quality Standards", description: "Building quality standards that meet international norms." },
+              { icon: "Cog", title: "Roofing & Cladding", description: "Premium sheets, purlins, and accessories for any roof." },
+            ]).map((item: any, index: number) => {
+              const Icon = ICONS[item.icon] || Cog;
+              return (
               <div
-                key={t}
+                key={index}
                 className="group relative bg-card p-10 transition-all hover:-translate-y-1 hover:shadow-elegant"
               >
                 <div className="mb-6 flex h-14 w-14 items-center justify-center bg-gradient-primary shadow-red transition-transform group-hover:scale-110 group-hover:rotate-3">
                   <Icon className="h-6 w-6 text-primary-foreground" />
                 </div>
-                <h3 className="mb-3 font-display text-xl font-bold text-foreground">{t}</h3>
-                <p className="text-sm leading-relaxed text-muted-foreground">{d}</p>
+                <h3 className="mb-3 font-display text-xl font-bold text-foreground">{item.title}</h3>
+                <p className="text-sm leading-relaxed text-muted-foreground">{item.description}</p>
                 <div className="absolute bottom-0 left-0 h-1 w-0 bg-gradient-primary transition-all duration-500 group-hover:w-full" />
               </div>
-            ))}
+            )})}
           </div>
 
           <div className="mt-12 text-center">

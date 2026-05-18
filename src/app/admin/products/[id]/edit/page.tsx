@@ -18,28 +18,59 @@ export default function EditProduct({ params }: { params: Promise<{ id: string }
   const [newFiles, setNewFiles] = useState<File[]>([]);
   const [newPreviews, setNewPreviews] = useState<string[]>([]);
   const [existingImages, setExistingImages] = useState<string[]>([]);
-  const [product, setProduct] = useState<any>(null);
+
   
+  const [categories, setCategories] = useState<any[]>([]);
   const [formData, setFormData] = useState({
-    title: '', slug: '', category: 'steel-column',
+    title: '', slug: '', category: '',
     description: '', content: '',
     seo_title: '', seo_description: '',
   });
 
   useEffect(() => {
-    const fetchProduct = async () => {
+    const loadData = async () => {
+      // 1. Fetch categories
+      let loadedCats: any[] = [];
+      try {
+        const { data: catData, error: catError } = await supabase
+          .from('product_categories')
+          .select('*')
+          .order('created_at', { ascending: true });
+        
+        if (!catError && catData && catData.length > 0) {
+          loadedCats = catData;
+        } else {
+          loadedCats = [
+            { title: 'STEEL COLUMN', slug: 'steel-column' },
+            { title: 'STEEL BEAM', slug: 'steel-beam' },
+            { title: 'PURLIN', slug: 'purlin' },
+            { title: 'SLIDING DOOR', slug: 'sliding-door' },
+            { title: 'ROOF MONITOR', slug: 'roof-monitor' },
+            { title: 'MS PLATE', slug: 'ms-plate' },
+            { title: 'INDUSTRIAL DECK SHEET', slug: 'industrial-deck-sheet' },
+            { title: 'INDUSTRIAL ROOF SHEET', slug: 'industrial-roof-sheet' },
+            { title: 'Self-Drilling Screw', slug: 'self-drilling-screw' },
+            { title: 'RAFTER', slug: 'rafter' }
+          ];
+        }
+      } catch (err) {
+        console.error(err);
+      }
+      setCategories(loadedCats);
+
+      // 2. Fetch product
       const { data, error } = await supabase.from('products').select('*').eq('id', id).single();
       if (error || !data) {
         alert('Product not found');
         router.push('/admin/products');
         return;
       }
-      setProduct(data);
+
       setExistingImages(data.images || (data.image_url ? [data.image_url] : []));
       setFormData({
         title: data.title,
         slug: data.slug,
-        category: data.category || 'steel-column',
+        category: data.category || (loadedCats[0]?.slug || ''),
         description: data.description || '',
         content: data.content || '',
         seo_title: data.seo_title || '',
@@ -48,7 +79,7 @@ export default function EditProduct({ params }: { params: Promise<{ id: string }
       setLoading(false);
     };
 
-    fetchProduct();
+    loadData();
   }, [id, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -127,16 +158,11 @@ export default function EditProduct({ params }: { params: Promise<{ id: string }
             <div className="space-y-2">
               <label className="text-sm font-medium">Category *</label>
               <select required name="category" value={formData.category} onChange={handleChange} className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
-                <option value="steel-column">STEEL COLOUM</option>
-                <option value="steel-beam">STEELL BEAM</option>
-                <option value="purlin">PURLIN</option>
-                <option value="sliding-door">SLIDING DOOR</option>
-                <option value="roof-monitor">ROOF MONITOR</option>
-                <option value="ms-plate">MS PlATE</option>
-                <option value="industrial-deck-sheet">INDUSTRIAL DECK SHEET</option>
-                <option value="industrial-roof-sheet">INDUSTRIAL ROOF SHEET</option>
-                <option value="self-drilling-screw">Self-Drilling Screw</option>
-                <option value="rafter">RAFTER</option>
+                {categories.map((c) => (
+                  <option key={c.slug} value={c.slug}>
+                    {c.title}
+                  </option>
+                ))}
               </select>
             </div>
           </div>

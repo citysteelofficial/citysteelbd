@@ -10,7 +10,14 @@ export default async function HomePage() {
     .order('created_at', { ascending: false })
     .limit(5);
 
-  const latestBlogs = data || [];
+  const { data: settingsData } = await supabase
+    .from('site_settings')
+    .select('*')
+    .eq('id', 1)
+    .single();
 
-  return <HomeClient latestBlogs={latestBlogs} />;
+  const latestBlogs = data || [];
+  const settings = settingsData || null;
+
+  return <HomeClient latestBlogs={latestBlogs} settings={settings} />;
 }

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { uploadMultipleImages } from '@/lib/upload';
@@ -16,15 +16,55 @@ export default function NewProduct() {
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   
+  const [categories, setCategories] = useState<any[]>([]);
+  const [fetchingCats, setFetchingCats] = useState(true);
+  
   const [formData, setFormData] = useState({
     title: '',
     slug: '',
-    category: 'steel-column',
+    category: '', // will be set dynamically once loaded
     description: '',
     content: '',
     seo_title: '',
     seo_description: '',
   });
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('product_categories')
+          .select('*')
+          .order('created_at', { ascending: true });
+        
+        if (!error && data && data.length > 0) {
+          setCategories(data);
+          setFormData(prev => ({ ...prev, category: data[0].slug }));
+        } else {
+          // Fallbacks if db table is empty
+          const defaults = [
+            { title: 'STEEL COLUMN', slug: 'steel-column' },
+            { title: 'STEEL BEAM', slug: 'steel-beam' },
+            { title: 'PURLIN', slug: 'purlin' },
+            { title: 'SLIDING DOOR', slug: 'sliding-door' },
+            { title: 'ROOF MONITOR', slug: 'roof-monitor' },
+            { title: 'MS PLATE', slug: 'ms-plate' },
+            { title: 'INDUSTRIAL DECK SHEET', slug: 'industrial-deck-sheet' },
+            { title: 'INDUSTRIAL ROOF SHEET', slug: 'industrial-roof-sheet' },
+            { title: 'Self-Drilling Screw', slug: 'self-drilling-screw' },
+            { title: 'RAFTER', slug: 'rafter' }
+          ];
+          setCategories(defaults);
+          setFormData(prev => ({ ...prev, category: 'steel-column' }));
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setFetchingCats(false);
+      }
+    };
+    loadCategories();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -111,16 +151,11 @@ export default function NewProduct() {
             <div className="space-y-2">
               <label className="text-sm font-medium leading-none">Product Category *</label>
               <select required name="category" value={formData.category} onChange={handleChange} className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
-                <option value="steel-column">STEEL COLOUM</option>
-                <option value="steel-beam">STEELL BEAM</option>
-                <option value="purlin">PURLIN</option>
-                <option value="sliding-door">SLIDING DOOR</option>
-                <option value="roof-monitor">ROOF MONITOR</option>
-                <option value="ms-plate">MS PlATE</option>
-                <option value="industrial-deck-sheet">INDUSTRIAL DECK SHEET</option>
-                <option value="industrial-roof-sheet">INDUSTRIAL ROOF SHEET</option>
-                <option value="self-drilling-screw">Self-Drilling Screw</option>
-                <option value="rafter">RAFTER</option>
+                {categories.map((c) => (
+                  <option key={c.slug} value={c.slug}>
+                    {c.title}
+                  </option>
+                ))}
               </select>
             </div>
           </div>

@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+
 import { supabase } from '@/lib/supabase';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import Link from 'next/link';
@@ -12,7 +12,6 @@ export default function AdminProjects() {
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
-  const router = useRouter();
 
   const fetchProjects = async () => {
     setLoading(true);
@@ -28,7 +27,10 @@ export default function AdminProjects() {
   };
 
   useEffect(() => {
-    fetchProjects();
+    const loadData = async () => {
+      await fetchProjects();
+    };
+    loadData();
   }, []);
 
   const handleDelete = async (id: string) => {

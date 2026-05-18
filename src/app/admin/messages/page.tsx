@@ -31,7 +31,10 @@ export default function AdminMessages() {
   };
 
   useEffect(() => {
-    fetchMessages();
+    const loadData = async () => {
+      await fetchMessages();
+    };
+    loadData();
   }, []);
 
   const markRead = async (id: string) => {

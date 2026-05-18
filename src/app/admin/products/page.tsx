@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+
 import { supabase } from '@/lib/supabase';
 import { Plus, Trash2, Edit } from 'lucide-react';
 import Link from 'next/link';
@@ -12,7 +12,6 @@ export default function AdminProducts() {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
-  const router = useRouter();
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -28,7 +27,10 @@ export default function AdminProducts() {
   };
 
   useEffect(() => {
-    fetchProducts();
+    const loadData = async () => {
+      await fetchProducts();
+    };
+    loadData();
   }, []);
 
   const handleDelete = async (id: string) => {
@@ -51,12 +53,20 @@ export default function AdminProducts() {
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
         <h2 className="text-3xl font-bold tracking-tight">Products</h2>
-        <Link 
-          href="/admin/products/new" 
-          className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
-        >
-          <Plus className="mr-2 h-4 w-4" /> Add New
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link 
+            href="/admin/products/categories" 
+            className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
+          >
+            Manage Categories
+          </Link>
+          <Link 
+            href="/admin/products/new" 
+            className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+          >
+            <Plus className="mr-2 h-4 w-4" /> Add New
+          </Link>
+        </div>
       </div>
       
       <div className="rounded-md border bg-card">

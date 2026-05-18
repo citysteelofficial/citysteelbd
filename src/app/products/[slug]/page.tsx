@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { supabase } from '@/lib/supabase';
 import { PageShell, PageHeader } from '@/components/site/PageShell';
+import { ProductGallery } from '@/components/site/ProductGallery';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Metadata } from 'next';
 
 interface Props {
@@ -50,35 +50,7 @@ export default async function ProductCategoryPage({ params }: Props) {
               </Link>
             </div>
           ) : (
-            <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {products.map((product: any) => (
-                <Link
-                  key={product.id}
-                  href={`/product/${product.slug}`}
-                  className="group relative block aspect-square overflow-hidden rounded-xl bg-muted shadow-soft transition-all hover:shadow-elegant"
-                >
-                  {product.image_url ? (
-                    <Image
-                      src={product.image_url}
-                      alt={product.title}
-                      fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-110"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center text-muted-foreground bg-secondary">
-                      {product.title}
-                    </div>
-                  )}
-                  {/* Overlay on hover */}
-                  <div className="absolute inset-0 bg-black/60 opacity-0 transition-opacity duration-300 flex items-center justify-center group-hover:opacity-100">
-                    <span className="text-white font-semibold tracking-wider text-sm uppercase px-4 text-center">
-                      View Details
-                    </span>
-                  </div>
-                </Link>
-              ))}
-            </div>
+            <ProductGallery products={products} />
           )}
         </div>
       </section>

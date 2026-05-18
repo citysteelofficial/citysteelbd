@@ -23,7 +23,7 @@ interface HeaderProps {
   servicesMenu: any[];
 }
 
-export function Header({ productsMenu, servicesMenu }: HeaderProps) {
+export function Header({ productsMenu = [], servicesMenu = [] }: HeaderProps) {
   const [open, setOpen] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
   const pathname = usePathname();
@@ -35,7 +35,7 @@ export function Header({ productsMenu, servicesMenu }: HeaderProps) {
   // Build sub-items for dropdown menus
   const getSubItems = (label: string): any[] => {
     if (label === "Products") {
-      return [
+      return productsMenu.length > 0 ? productsMenu : [
         { title: "STEEL COLUMN", slug: "steel-column", isStatic: true },
         { title: "STEEL BEAM", slug: "steel-beam", isStatic: true },
         { title: "PURLIN", slug: "purlin", isStatic: true },
@@ -48,7 +48,7 @@ export function Header({ productsMenu, servicesMenu }: HeaderProps) {
         { title: "RAFTER", slug: "rafter", isStatic: true },
       ];
     } else if (label === "Services") {
-      return servicesMenu.length > 0 ? servicesMenu : [
+      return [
         { title: "Complete Solution to the Steel Structure", slug: "complete-solution" },
         { title: "Steel Building Product Supply", slug: "product-supply" },
         { title: "Interior Solution", slug: "interior-solution" },

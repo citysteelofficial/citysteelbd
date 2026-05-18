@@ -44,12 +44,12 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   // Fetch menu data for Header (SSR)
-  const [productsRes, servicesRes] = await Promise.all([
-    supabase.from('products').select('title, slug').order('created_at', { ascending: false }),
+  const [categoriesRes, servicesRes] = await Promise.all([
+    supabase.from('product_categories').select('title, slug').order('created_at', { ascending: true }),
     supabase.from('services').select('title, slug').order('created_at', { ascending: false })
   ]);
 
-  const productsMenu = productsRes.data || [];
+  const productsMenu = categoriesRes.data || [];
   const servicesMenu = servicesRes.data || [];
 
   return (
