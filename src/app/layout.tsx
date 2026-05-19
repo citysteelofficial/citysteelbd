@@ -3,6 +3,7 @@ import "./globals.css";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { supabase } from "@/lib/supabase";
+import Script from "next/script";
 
 import { Oswald, Inter } from "next/font/google";
 
@@ -21,20 +22,168 @@ const inter = Inter({
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  themeColor: "#b91c1c",
 };
 
+const SITE_URL = "https://citysteelbd.com";
+const SITE_NAME = "City Steel Corporation";
+
 export const metadata: Metadata = {
-  title: "City Steel Corporation | Premium Industrial Steel Structures",
-  description: "City Steel Corporation delivers premium pre-engineered steel buildings, trusses, and industrial structures across Bangladesh.",
-  authors: [{ name: "City Steel BD" }],
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: `${SITE_NAME} | Premium Industrial Steel Structures in Bangladesh`,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description:
+    "City Steel Corporation delivers premium pre-engineered steel buildings, trusses, roofing sheets, and industrial steel structures across Bangladesh. ISO-certified quality, 15+ years of experience.",
+  keywords: [
+    "steel structure Bangladesh",
+    "pre-engineered building",
+    "PEB Bangladesh",
+    "steel fabrication",
+    "industrial steel structure",
+    "City Steel Corporation",
+    "steel truss",
+    "roofing sheet",
+    "purlin",
+    "steel beam",
+    "steel column",
+    "warehouse construction",
+    "factory construction Bangladesh",
+    "steel building Dhaka",
+    "City Steel BD",
+  ],
+  authors: [{ name: SITE_NAME, url: SITE_URL }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  alternates: {
+    canonical: SITE_URL,
+  },
   openGraph: {
-    title: "City Steel Corporation",
-    description: "Premium industrial steel structures in Bangladesh.",
     type: "website",
-    url: "https://citysteelbd.com",
+    locale: "en_US",
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} | Premium Industrial Steel Structures`,
+    description:
+      "Design, fabrication, and erection of world-class pre-engineered steel buildings across Bangladesh. 500+ projects completed.",
+    images: [
+      {
+        url: `${SITE_URL}/og-image.jpg`,
+        width: 1200,
+        height: 630,
+        alt: `${SITE_NAME} — Building the Backbone of Modern Industry`,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
+    title: `${SITE_NAME} | Premium Steel Structures`,
+    description:
+      "Pre-engineered steel buildings, trusses & industrial structures in Bangladesh.",
+    images: [`${SITE_URL}/og-image.jpg`],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    // =========================================
+    // 🔑 REPLACE THESE WITH YOUR ACTUAL CODES
+    // =========================================
+    google: "YOUR_GOOGLE_SEARCH_CONSOLE_VERIFICATION_CODE",
+    // yandex: "YOUR_YANDEX_CODE",
+    // yahoo: "YOUR_YAHOO_CODE",
+  },
+};
+
+// JSON-LD Structured Data for Organization
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: SITE_NAME,
+  url: SITE_URL,
+  logo: `${SITE_URL}/logo.svg`,
+  description:
+    "City Steel Corporation specializes in design, manufacture, supply, and erection of pre-engineered steel buildings and industrial steel structures across Bangladesh.",
+  foundingDate: "2009",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "7/6, Garden Street, Ring Road, Shyamoli",
+    addressLocality: "Dhaka",
+    postalCode: "1207",
+    addressCountry: "BD",
+  },
+  contactPoint: [
+    {
+      "@type": "ContactPoint",
+      telephone: "+880-1711-787556",
+      contactType: "sales",
+      areaServed: "BD",
+      availableLanguage: ["Bengali", "English"],
+    },
+    {
+      "@type": "ContactPoint",
+      telephone: "+880-1711-991775",
+      contactType: "customer service",
+      areaServed: "BD",
+    },
+  ],
+  email: "citysteel.corporation@gmail.com",
+  sameAs: [
+    // Add your social media URLs here when available
+    // "https://www.facebook.com/citysteelbd",
+    // "https://www.linkedin.com/company/citysteelbd",
+  ],
+};
+
+// JSON-LD for Local Business
+const localBusinessJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "@id": `${SITE_URL}/#business`,
+  name: SITE_NAME,
+  image: `${SITE_URL}/og-image.jpg`,
+  url: SITE_URL,
+  telephone: "+880-1711-787556",
+  email: "citysteel.corporation@gmail.com",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "7/6, Garden Street, Ring Road, Shyamoli",
+    addressLocality: "Dhaka",
+    postalCode: "1207",
+    addressRegion: "Dhaka Division",
+    addressCountry: "BD",
+  },
+  geo: {
+    "@type": "GeoCoordinates",
+    latitude: 23.7743,
+    longitude: 90.3651,
+  },
+  openingHoursSpecification: [
+    {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"],
+      opens: "09:00",
+      closes: "18:00",
+    },
+  ],
+  priceRange: "$$",
+  areaServed: {
+    "@type": "Country",
+    name: "Bangladesh",
   },
 };
 
@@ -45,8 +194,14 @@ export default async function RootLayout({
 }>) {
   // Fetch menu data for Header (SSR)
   const [categoriesRes, servicesRes] = await Promise.all([
-    supabase.from('product_categories').select('title, slug').order('created_at', { ascending: true }),
-    supabase.from('services').select('title, slug').order('created_at', { ascending: false })
+    supabase
+      .from("product_categories")
+      .select("title, slug")
+      .order("created_at", { ascending: true }),
+    supabase
+      .from("services")
+      .select("title, slug")
+      .order("created_at", { ascending: false }),
   ]);
 
   const productsMenu = categoriesRes.data || [];
@@ -54,7 +209,38 @@ export default async function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`antialiased ${oswald.variable} ${inter.variable}`}>
+      <head>
+        {/* JSON-LD Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
+        />
+      </head>
+      <body
+        className={`antialiased ${oswald.variable} ${inter.variable}`}
+        suppressHydrationWarning
+      >
+        {/* ============================================
+            Google Analytics (GA4)
+            Replace G-XXXXXXXXXX with your Measurement ID
+            ============================================ */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-XXXXXXXXXX');
+          `}
+        </Script>
+
         <Header productsMenu={productsMenu} servicesMenu={servicesMenu} />
         {children}
         <Footer />

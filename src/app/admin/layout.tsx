@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { LayoutDashboard, Package, Briefcase, FileText, Settings, LogOut, MessageSquare, Wrench, Home, ChevronDown, LayoutTemplate, ListChecks, Info } from 'lucide-react';
+import { LayoutDashboard, Package, Briefcase, FileText, Settings, LogOut, MessageSquare, Wrench, Home, ChevronDown, LayoutTemplate, ListChecks, Info, GraduationCap } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -117,6 +117,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </Link>
             <Link href="/admin/messages" className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${isActive('/admin/messages') ? 'bg-muted text-primary font-semibold' : 'text-muted-foreground'}`}>
               <MessageSquare className="h-4 w-4" /> Messages
+            </Link>
+            <Link href="/admin/career" className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${isActive('/admin/career') ? 'bg-muted text-primary font-semibold' : 'text-muted-foreground'}`}>
+              <GraduationCap className="h-4 w-4" /> Career / Jobs
             </Link>
           </nav>
         </div>

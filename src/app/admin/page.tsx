@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Package, Briefcase, Settings, FileText } from 'lucide-react';
+import { Package, Briefcase, Settings, FileText, GraduationCap, MessageSquare } from 'lucide-react';
 
 export default function AdminDashboard() {
   return (
@@ -8,11 +8,13 @@ export default function AdminDashboard() {
         <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
       </div>
       
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card title="Projects" icon={<Briefcase className="h-4 w-4 text-muted-foreground" />} value="Manage Projects" link="/admin/projects" />
         <Card title="Products" icon={<Package className="h-4 w-4 text-muted-foreground" />} value="Manage Products" link="/admin/products" />
         <Card title="Services" icon={<Settings className="h-4 w-4 text-muted-foreground" />} value="Manage Services" link="/admin/services" />
         <Card title="Blogs" icon={<FileText className="h-4 w-4 text-muted-foreground" />} value="Manage Blogs" link="/admin/blogs" />
+        <Card title="Messages" icon={<MessageSquare className="h-4 w-4 text-muted-foreground" />} value="Contact Messages" link="/admin/messages" />
+        <Card title="Career / Jobs" icon={<GraduationCap className="h-4 w-4 text-muted-foreground" />} value="Job Circulars" link="/admin/career" />
       </div>
     </div>
   );

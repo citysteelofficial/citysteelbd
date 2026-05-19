@@ -1,6 +1,8 @@
 import { supabase } from "@/lib/supabase";
 import { HomeClient } from "@/components/site/HomeClient";
 
+export const revalidate = 60;
+
 export default async function HomePage() {
   // Fetch latest blogs on the server for SEO
   const { data } = await supabase

@@ -28,13 +28,16 @@ const ICONS: Record<string, any> = {
 };
 
 export const metadata: Metadata = {
-  title: "About Us — City Steel Corporation",
-  description: "Learn about City Steel Corporation — a leading industrial steel structure provider committed to innovation, quality, and client satisfaction.",
+  title: "About Us — Our Story, Mission & Vision",
+  description: "City Steel Corporation is a leading industrial steel structure provider in Bangladesh, committed to innovation, quality, and client satisfaction since 2009. 500+ projects, ISO-certified.",
+  alternates: { canonical: "https://citysteelbd.com/about" },
   openGraph: {
     title: "About City Steel Corporation",
-    description: "Our story, mission, vision, and technical advantages.",
+    description: "Our story, mission, vision, and technical advantages in pre-engineered steel buildings.",
   },
 };
+
+export const revalidate = 60;
 
 export default async function AboutPage() {
   const { data: settings } = await supabase

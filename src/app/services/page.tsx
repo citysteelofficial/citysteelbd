@@ -3,8 +3,13 @@ import { Factory, Building2, HardHat, Wrench, Shield, Cog, Hammer, Ruler } from 
 import { PageShell, PageHeader } from "@/components/site/PageShell";
 
 export const metadata: Metadata = {
-  title: "Services — City Steel Corporation",
-  description: "Design, fabrication, erection, and full Design & Build packages for industrial steel structures.",
+  title: "Services — Steel Structure Design, Fabrication & Erection",
+  description: "Comprehensive steel structure services: engineering design, PEB fabrication, erection & installation, roofing & cladding, and full Design & Build packages across Bangladesh.",
+  alternates: { canonical: "https://citysteelbd.com/services" },
+  openGraph: {
+    title: "Our Services | City Steel Corporation",
+    description: "Design, fabrication, erection, and full Design & Build packages for industrial steel structures.",
+  },
 };
 
 const services = [

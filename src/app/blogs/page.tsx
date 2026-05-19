@@ -6,9 +6,16 @@ import Link from "next/link";
 import Image from "next/image";
 
 export const metadata: Metadata = {
-  title: "Our Blog & Insights — City Steel Corporation",
-  description: "Read the latest news, insights, and updates from the steel construction industry.",
+  title: "Blog & Insights — Steel Construction Industry News",
+  description: "Read the latest news, insights, and technical articles about steel construction, PEB buildings, and industrial engineering from City Steel Corporation.",
+  alternates: { canonical: "https://citysteelbd.com/blogs" },
+  openGraph: {
+    title: "Blog & Insights | City Steel Corporation",
+    description: "Latest news and updates from the steel construction industry.",
+  },
 };
+
+export const revalidate = 60;
 
 export default async function BlogsPage() {
   const { data: blogs } = await supabase

@@ -4,8 +4,13 @@ import { ArrowRight } from "lucide-react";
 import { PageShell, PageHeader } from "@/components/site/PageShell";
 
 export const metadata: Metadata = {
-  title: "Products — City Steel Corporation",
-  description: "Pre-engineered buildings, steel trusses, roofing sheets, purlins and more from City Steel Corporation.",
+  title: "Products — Industrial Steel Building Components",
+  description: "Browse premium steel building products: pre-engineered buildings, trusses, roofing sheets, purlins, crane beams, mezzanine floors, and more from City Steel Corporation.",
+  alternates: { canonical: "https://citysteelbd.com/products" },
+  openGraph: {
+    title: "Our Products | City Steel Corporation",
+    description: "A complete range of steel building components engineered for industrial performance and longevity.",
+  },
 };
 
 const products = [

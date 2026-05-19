@@ -9,6 +9,8 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
+export const revalidate = 60;
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const { data: blog } = await supabase
@@ -21,13 +23,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!blog) return { title: 'Blog Not Found' };
 
   return {
-    title: blog.seo_title || `${blog.title} | City Steel Corporation`,
-    description: blog.seo_description || '',
+    title: blog.seo_title || blog.title,
+    description: blog.seo_description || `Read "${blog.title}" on City Steel Corporation Blog.`,
     keywords: blog.seo_keywords || '',
+    alternates: {
+      canonical: `https://citysteelbd.com/blogs/${slug}`,
+    },
     openGraph: {
       title: blog.seo_title || blog.title,
+      description: blog.seo_description || '',
       images: blog.thumbnail_url ? [blog.thumbnail_url] : [],
       type: 'article',
+      publishedTime: blog.created_at,
+      authors: ['City Steel Corporation'],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: blog.seo_title || blog.title,
+      images: blog.thumbnail_url ? [blog.thumbnail_url] : [],
     },
   };
 }
@@ -43,8 +56,28 @@ export default async function BlogDetailsPage({ params }: Props) {
   
   if (error || !blog) notFound();
 
+  // JSON-LD Article structured data
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: blog.title,
+    image: blog.thumbnail_url || '',
+    datePublished: blog.created_at,
+    author: { "@type": "Organization", name: "City Steel Corporation" },
+    publisher: {
+      "@type": "Organization",
+      name: "City Steel Corporation",
+      logo: { "@type": "ImageObject", url: "https://citysteelbd.com/logo.svg" },
+    },
+    mainEntityOfPage: `https://citysteelbd.com/blogs/${slug}`,
+  };
+
   return (
     <PageShell>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
       <section className="bg-surface py-24">
         <div className="container-x">
           <div className="mx-auto max-w-4xl">
