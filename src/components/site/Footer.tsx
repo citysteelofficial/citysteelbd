@@ -91,7 +91,7 @@ export function Footer() {
       <div className="border-t border-[oklch(0.98_0_0/0.1)]">
         <div className="container-x flex flex-col items-center justify-between gap-2 py-6 text-xs uppercase tracking-widest text-[oklch(0.6_0_0)] sm:flex-row">
           <span>© {new Date().getFullYear()} City Steel Corporation</span>
-          <a href="https://citysteelbd.com" className="transition-colors hover:text-primary">citysteelbd.com</a>
+          <span>Develop By <a href="https://techvilo.com" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-primary">Techvilo Ltd</a></span>
         </div>
       </div>
     </footer>
