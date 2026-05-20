@@ -3,7 +3,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { Menu, X, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import logo from "@/assets/logo.svg";
@@ -26,7 +27,25 @@ interface HeaderProps {
 export function Header({ productsMenu = [], servicesMenu = [] }: HeaderProps) {
   const [open, setOpen] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
+  const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null);
   const pathname = usePathname();
+
+  // Set up portal root on mount (client-side only)
+  useEffect(() => {
+    setPortalRoot(document.body);
+  }, []);
+
+  // Lock body scroll when mobile drawer is open
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
 
   if (pathname.startsWith('/admin')) {
     return null;
@@ -80,155 +99,168 @@ export function Header({ productsMenu = [], servicesMenu = [] }: HeaderProps) {
     return pathname.startsWith(to);
   };
 
-  return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-md">
-      <div className="container-x flex h-20 items-center justify-between">
-        <Link href="/" className="group flex items-center" aria-label="City Steel — Home">
-          <Image
-            src={logo}
-            alt="City Steel — Building the Future"
-            width={240}
-            height={85}
-            className="h-16 w-auto transition-transform group-hover:scale-[1.03] sm:h-20"
-            priority
-          />
-        </Link>
-
-        {/* Desktop Navigation */}
-        <nav className="hidden items-center gap-1 lg:flex">
-          {nav.map((n) => {
-            if (isDropdown(n.label)) {
-              const subItems = getSubItems(n.label);
-              return (
-                <div key={n.to} className="group relative">
-                  <div className={`relative flex cursor-pointer items-center gap-1 px-4 py-2 text-sm font-semibold uppercase tracking-wider transition-colors hover:text-foreground ${isActive(n.to) ? 'text-foreground' : 'text-muted-foreground'}`}>
-                    {n.label} <ChevronDown className="h-3 w-3" />
-                  </div>
-                  {/* Dropdown Menu */}
-                  <div className="absolute left-0 top-full hidden w-64 flex-col border border-border bg-background shadow-elegant group-hover:flex">
-                    {subItems.map((item: any) => {
-                      if (n.label === "Projects") {
-                        return (
-                          <Link
-                            key={item.slug || item.title}
-                            href={`/projects?status=${item.slug}`}
-                            className="px-4 py-3 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                          >
-                            {item.title}
-                          </Link>
-                        );
-                      }
-
-                      const linkHref = n.label === "Products"
-                        ? `/products/${item.slug || 'demo'}`
-                        : item.isDynamicService
-                          ? `/service/${item.slug || 'demo'}`
-                          : `/services/${item.slug || 'demo'}`;
-
-                      return (
-                        <Link
-                          key={item.slug || item.title}
-                          href={linkHref}
-                          className="px-4 py-3 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                        >
-                          {item.title}
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            }
-
-            return (
-              <Link
-                key={n.to}
-                href={n.to}
-                className={`relative px-4 py-2 text-sm font-semibold uppercase tracking-wider transition-colors hover:text-foreground ${
-                  isActive(n.to) ? "text-foreground" : "text-muted-foreground"
-                }`}
-              >
-                {n.label}
-              </Link>
-            );
-          })}
-          <Link
-            href="/contact"
-            className="ml-4 inline-flex items-center bg-gradient-primary px-5 py-2.5 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-red transition-all hover:scale-105"
-          >
-            Get Quote
-          </Link>
-        </nav>
-
-        <button
-          aria-label="Toggle menu"
-          className="lg:hidden"
-          onClick={() => setOpen(!open)}
-        >
-          {open ? <X /> : <Menu />}
-        </button>
-      </div>
-
-      {/* Mobile Navigation Drawer Overlay */}
-      {open && (
-        <div 
-          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden transition-opacity" 
-          onClick={() => setOpen(false)}
-        />
-      )}
-
-      {/* Mobile Navigation Drawer */}
-      <nav 
-        className={`fixed inset-y-0 left-0 z-50 w-[280px] max-w-[80vw] bg-background shadow-2xl lg:hidden transform transition-transform duration-300 ease-in-out ${
-          open ? 'translate-x-0' : '-translate-x-full'
-        } overflow-y-auto flex flex-col`}
-      >
-        <div className="flex h-20 shrink-0 items-center justify-between border-b border-border px-6">
-          <Link href="/" onClick={() => setOpen(false)} className="flex items-center">
-            <Image
-              src={logo}
-              alt="City Steel Logo"
-              width={160}
-              height={50}
-              className="h-12 w-auto sm:h-14"
-            />
-          </Link>
-          <button
+  // Mobile drawer content — rendered via portal to escape header's backdrop-filter containing block
+  const mobileDrawer = portalRoot
+    ? createPortal(
+        <>
+          {/* Overlay */}
+          <div
+            className={`fixed inset-0 z-[9998] bg-black/60 backdrop-blur-sm lg:hidden transition-opacity duration-300 ${
+              open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+            }`}
             onClick={() => setOpen(false)}
-            className="rounded-full p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            aria-hidden="true"
+          />
+
+          {/* Drawer */}
+          <nav
+            className={`fixed inset-y-0 left-0 z-[9999] w-[280px] max-w-[80vw] bg-background shadow-2xl lg:hidden transform transition-transform duration-300 ease-in-out ${
+              open ? "translate-x-0" : "-translate-x-full"
+            } overflow-y-auto flex flex-col`}
+            aria-label="Mobile navigation"
           >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
+            <div className="flex h-20 shrink-0 items-center justify-between border-b border-border px-6">
+              <Link href="/" onClick={() => setOpen(false)} className="flex items-center">
+                <Image
+                  src={logo}
+                  alt="City Steel Logo"
+                  width={160}
+                  height={50}
+                  className="h-12 w-auto sm:h-14"
+                />
+              </Link>
+              <button
+                onClick={() => setOpen(false)}
+                aria-label="Close menu"
+                className="rounded-full p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
 
-        <div className="flex flex-col py-4 px-3">
-          {nav.map((n) => {
-            if (isDropdown(n.label)) {
-              const subItems = getSubItems(n.label);
-              const isExpanded = mobileExpanded === n.label;
+            <div className="flex flex-col py-4 px-3">
+              {nav.map((n) => {
+                if (isDropdown(n.label)) {
+                  const subItems = getSubItems(n.label);
+                  const isExpanded = mobileExpanded === n.label;
 
-              return (
-                <div key={n.to} className="mb-1">
-                  <button
-                    onClick={() => toggleMobileExpanded(n.label)}
-                    className={`flex w-full items-center justify-between rounded-lg px-3 py-3 text-sm font-semibold uppercase tracking-wider transition-colors hover:bg-muted ${isActive(n.to) ? 'text-primary' : 'text-foreground'}`}
+                  return (
+                    <div key={n.to} className="mb-1">
+                      <button
+                        onClick={() => toggleMobileExpanded(n.label)}
+                        className={`flex w-full items-center justify-between rounded-lg px-3 py-3 text-sm font-semibold uppercase tracking-wider transition-colors hover:bg-muted ${isActive(n.to) ? 'text-primary' : 'text-foreground'}`}
+                      >
+                        {n.label}
+                        <ChevronDown
+                          className={`h-4 w-4 transition-transform duration-200 ${isExpanded ? "rotate-180 text-primary" : "text-muted-foreground"}`}
+                        />
+                      </button>
+
+                      <div
+                        className={`ml-3 flex flex-col border-l-2 border-border pl-2 overflow-hidden transition-all duration-300 ease-in-out ${
+                          isExpanded ? "mt-1 max-h-[600px] opacity-100" : "max-h-0 opacity-0"
+                        }`}
+                      >
+                        {subItems.map((item: any) => {
+                          if (n.label === "Projects") {
+                            return (
+                              <Link
+                                key={item.slug || item.title}
+                                href={`/projects?status=${item.slug}`}
+                                onClick={() => setOpen(false)}
+                                className="rounded-md px-3 py-2.5 text-xs font-medium uppercase tracking-wider text-muted-foreground hover:bg-muted hover:text-primary transition-colors"
+                              >
+                                {item.title}
+                              </Link>
+                            );
+                          }
+
+                          const linkHref = n.label === "Products"
+                            ? `/products/${item.slug || 'demo'}`
+                            : item.isDynamicService
+                              ? `/service/${item.slug || 'demo'}`
+                              : `/services/${item.slug || 'demo'}`;
+
+                          return (
+                            <Link
+                              key={item.slug || item.title}
+                              href={linkHref}
+                              onClick={() => setOpen(false)}
+                              className="rounded-md px-3 py-2.5 text-xs font-medium uppercase tracking-wider text-muted-foreground hover:bg-muted hover:text-primary transition-colors"
+                            >
+                              {item.title}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                }
+
+                return (
+                  <Link
+                    key={n.to}
+                    href={n.to}
+                    onClick={() => setOpen(false)}
+                    className={`mb-1 rounded-lg px-3 py-3 text-sm font-semibold uppercase tracking-wider transition-colors hover:bg-muted ${
+                      isActive(n.to) ? "bg-primary/10 text-primary" : "text-foreground"
+                    }`}
                   >
                     {n.label}
-                    <ChevronDown
-                      className={`h-4 w-4 transition-transform duration-200 ${isExpanded ? "rotate-180 text-primary" : "text-muted-foreground"}`}
-                    />
-                  </button>
+                  </Link>
+                );
+              })}
+            </div>
 
-                  {isExpanded && (
-                    <div className="ml-3 mt-1 flex flex-col border-l-2 border-border pl-2">
+            <div className="mt-auto border-t border-border p-6">
+              <Link
+                href="/contact"
+                onClick={() => setOpen(false)}
+                className="flex w-full items-center justify-center bg-gradient-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-red transition-all hover:scale-105"
+              >
+                Get a Quote
+              </Link>
+            </div>
+          </nav>
+        </>,
+        portalRoot
+      )
+    : null;
+
+  return (
+    <>
+      <header className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-md">
+        <div className="container-x flex h-20 items-center justify-between">
+          <Link href="/" className="group flex items-center" aria-label="City Steel — Home">
+            <Image
+              src={logo}
+              alt="City Steel — Building the Future"
+              width={240}
+              height={85}
+              className="h-16 w-auto transition-transform group-hover:scale-[1.03] sm:h-20"
+              priority
+            />
+          </Link>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden items-center gap-1 lg:flex">
+            {nav.map((n) => {
+              if (isDropdown(n.label)) {
+                const subItems = getSubItems(n.label);
+                return (
+                  <div key={n.to} className="group relative">
+                    <div className={`relative flex cursor-pointer items-center gap-1 px-4 py-2 text-sm font-semibold uppercase tracking-wider transition-colors hover:text-foreground ${isActive(n.to) ? 'text-foreground' : 'text-muted-foreground'}`}>
+                      {n.label} <ChevronDown className="h-3 w-3" />
+                    </div>
+                    {/* Dropdown Menu */}
+                    <div className="absolute left-0 top-full hidden w-64 flex-col border border-border bg-background shadow-elegant group-hover:flex">
                       {subItems.map((item: any) => {
                         if (n.label === "Projects") {
                           return (
                             <Link
                               key={item.slug || item.title}
                               href={`/projects?status=${item.slug}`}
-                              onClick={() => setOpen(false)}
-                              className="rounded-md px-3 py-2.5 text-xs font-medium uppercase tracking-wider text-muted-foreground hover:bg-muted hover:text-primary transition-colors"
+                              className="px-4 py-3 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                             >
                               {item.title}
                             </Link>
@@ -245,44 +277,49 @@ export function Header({ productsMenu = [], servicesMenu = [] }: HeaderProps) {
                           <Link
                             key={item.slug || item.title}
                             href={linkHref}
-                            onClick={() => setOpen(false)}
-                            className="rounded-md px-3 py-2.5 text-xs font-medium uppercase tracking-wider text-muted-foreground hover:bg-muted hover:text-primary transition-colors"
+                            className="px-4 py-3 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                           >
                             {item.title}
                           </Link>
                         );
                       })}
                     </div>
-                  )}
-                </div>
-              );
-            }
+                  </div>
+                );
+              }
 
-            return (
-              <Link
-                key={n.to}
-                href={n.to}
-                onClick={() => setOpen(false)}
-                className={`mb-1 rounded-lg px-3 py-3 text-sm font-semibold uppercase tracking-wider transition-colors hover:bg-muted ${
-                  isActive(n.to) ? "bg-primary/10 text-primary" : "text-foreground"
-                }`}
-              >
-                {n.label}
-              </Link>
-            );
-          })}
-        </div>
-        
-        <div className="mt-auto border-t border-border p-6">
-          <Link
-            href="/contact"
-            onClick={() => setOpen(false)}
-            className="flex w-full items-center justify-center bg-gradient-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-red transition-all hover:scale-105"
+              return (
+                <Link
+                  key={n.to}
+                  href={n.to}
+                  className={`relative px-4 py-2 text-sm font-semibold uppercase tracking-wider transition-colors hover:text-foreground ${
+                    isActive(n.to) ? "text-foreground" : "text-muted-foreground"
+                  }`}
+                >
+                  {n.label}
+                </Link>
+              );
+            })}
+            <Link
+              href="/contact"
+              className="ml-4 inline-flex items-center bg-gradient-primary px-5 py-2.5 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-red transition-all hover:scale-105"
+            >
+              Get Quote
+            </Link>
+          </nav>
+
+          <button
+            aria-label="Toggle menu"
+            className="lg:hidden"
+            onClick={() => setOpen(!open)}
           >
-            Get a Quote
-          </Link>
+            {open ? <X /> : <Menu />}
+          </button>
         </div>
-      </nav>
-    </header>
+      </header>
+
+      {/* Mobile drawer rendered via portal to escape header's backdrop-filter containing block */}
+      {mobileDrawer}
+    </>
   );
 }

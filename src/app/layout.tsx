@@ -143,9 +143,7 @@ const organizationJsonLd = {
   ],
   email: "citysteel.corporation@gmail.com",
   sameAs: [
-    // Add your social media URLs here when available
-    // "https://www.facebook.com/citysteelbd",
-    // "https://www.linkedin.com/company/citysteelbd",
+    "https://www.facebook.com/profile.php?id=61573880256953",
   ],
 };
 
