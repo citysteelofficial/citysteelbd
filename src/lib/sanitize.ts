@@ -1,13 +1,15 @@
-import DOMPurify from 'isomorphic-dompurify';
+import sanitizeHtmlLib from 'sanitize-html';
 
 /**
  * Sanitize HTML content from the CMS to prevent XSS attacks.
- * Strips dangerous tags like <script>, <iframe>, event handlers, etc.
- * Uses isomorphic-dompurify which works both on server (Node.js) and client (browser).
+ * Strips dangerous tags like <script>, event handlers, etc.
+ * Uses sanitize-html which is purely JS-based and safe for Next.js Server Components.
  */
 export function sanitizeHtml(dirty: string): string {
-  return DOMPurify.sanitize(dirty, {
-    ALLOWED_TAGS: [
+  if (!dirty) return '';
+  
+  return sanitizeHtmlLib(dirty, {
+    allowedTags: [
       'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
       'p', 'br', 'hr',
       'ul', 'ol', 'li',
@@ -17,13 +19,16 @@ export function sanitizeHtml(dirty: string): string {
       'table', 'thead', 'tbody', 'tr', 'th', 'td',
       'div', 'span', 'figure', 'figcaption',
       'sub', 'sup', 'mark',
+      'iframe'
     ],
-    ALLOWED_ATTR: [
-      'href', 'target', 'rel',
-      'src', 'alt', 'width', 'height',
-      'class', 'id', 'style',
-      'colspan', 'rowspan',
-    ],
-    ALLOW_DATA_ATTR: false,
+    allowedAttributes: {
+      '*': ['class', 'id', 'style'],
+      'a': ['href', 'target', 'rel'],
+      'img': ['src', 'alt', 'width', 'height'],
+      'th': ['colspan', 'rowspan'],
+      'td': ['colspan', 'rowspan'],
+      'iframe': ['src', 'width', 'height', 'frameborder', 'allow', 'allowfullscreen']
+    },
+    allowedIframeHostnames: ['www.youtube.com', 'player.vimeo.com']
   });
 }
