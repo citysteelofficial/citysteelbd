@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
 import { supabase } from '@/lib/supabase';
+import { cleanSlug } from '@/lib/slug';
 
 const BASE_URL = 'https://citysteelbd.com';
 
@@ -55,7 +56,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Dynamic: Blogs (published only)
   const { data: blogs } = await supabase.from('blogs').select('slug, created_at').eq('is_published', true);
   const blogPages: MetadataRoute.Sitemap = (blogs || []).map((b) => ({
-    url: `${BASE_URL}/blogs/${b.slug}`,
+    url: `${BASE_URL}/blogs/${cleanSlug(b.slug)}`,
     lastModified: new Date(b.created_at),
     changeFrequency: 'weekly' as const,
     priority: 0.6,

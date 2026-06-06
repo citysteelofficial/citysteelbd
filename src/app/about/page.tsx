@@ -157,7 +157,7 @@ export default async function AboutPage() {
             {/* Specialties Badges */}
             <div className="mt-6 flex flex-wrap gap-2">
               {specialties.map((spec: string) => (
-                <span key={spec} className="inline-flex items-center rounded-full bg-secondary/80 border border-border px-3 py-1 text-[11px] font-semibold text-foreground">
+                <span key={spec} className="inline-flex items-center rounded-full bg-secondary border border-border px-3 py-1 text-[11px] font-semibold text-secondary-foreground transition-colors hover:bg-primary hover:text-primary-foreground hover:border-primary cursor-default">
                   {spec}
                 </span>
               ))}

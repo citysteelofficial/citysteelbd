@@ -32,6 +32,22 @@ export function ContactClient() {
       setErrorMsg('Message could not be sent. Please try again or call us directly.');
       console.error('Contact form error:', error);
     } else {
+      // Create WhatsApp message format
+      const waMessage = `*New Contact Request*
+*Name:* ${formData.name}
+*Email:* ${formData.email}
+*Phone:* ${formData.phone || 'N/A'}
+*Subject:* ${formData.subject || 'N/A'}
+*Message:*
+${formData.message}`;
+
+      const encodedMessage = encodeURIComponent(waMessage);
+      // Ensure the phone number format is correct (include country code without + or 00)
+      const waUrl = `https://wa.me/8801711787556?text=${encodedMessage}`;
+
+      // Open WhatsApp in a new tab/app
+      window.open(waUrl, '_blank');
+
       setStatus('success');
       setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
     }
@@ -115,7 +131,8 @@ export function ContactClient() {
               <div className="border border-green-500/30 bg-green-50 p-6 text-center rounded-lg">
                 <CheckCircle className="mx-auto h-10 w-10 text-green-600 mb-3" />
                 <div className="mb-2 font-display text-2xl font-bold text-green-700">Thank you!</div>
-                <p className="text-sm text-green-600">Your message has been received. We&apos;ll be in touch shortly.</p>
+                <p className="text-sm text-green-600">Your message has been received.</p>
+                <p className="text-sm text-green-600 font-medium mt-2">WhatsApp has been opened automatically. Please press &quot;Send&quot; to forward your message directly to our team.</p>
                 <button
                   type="button"
                   onClick={() => setStatus('idle')}

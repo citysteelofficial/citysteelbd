@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Briefcase, MapPin, Clock, ArrowRight, CalendarDays, DollarSign, Award } from "lucide-react";
 import { PageShell, PageHeader } from "@/components/site/PageShell";
 import { supabase } from "@/lib/supabase";
+import { sanitizeHtml } from "@/lib/sanitize";
 import Link from "next/link";
 
 export const revalidate = 60;
@@ -102,7 +103,7 @@ export default async function CareerPage() {
                       {j.description && (
                         <div
                           className="mt-3 text-sm text-muted-foreground line-clamp-2 prose prose-sm max-w-none"
-                          dangerouslySetInnerHTML={{ __html: j.description }}
+                          dangerouslySetInnerHTML={{ __html: sanitizeHtml(j.description) }}
                         />
                       )}
                     </div>

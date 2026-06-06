@@ -4,6 +4,7 @@ import { PageShell, PageHeader } from "@/components/site/PageShell";
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import Image from "next/image";
+import { cleanSlug } from "@/lib/slug";
 
 export const metadata: Metadata = {
   title: "Blog & Insights — Steel Construction Industry News",
@@ -44,7 +45,7 @@ export default async function BlogsPage() {
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               {allBlogs.map((blog: any) => (
                 <div key={blog.id} className="group flex flex-col overflow-hidden rounded-xl border bg-card shadow-soft transition-all hover:shadow-elegant">
-                  <Link href={`/blogs/${blog.slug}`} className="relative aspect-[16/9] overflow-hidden">
+                  <Link href={`/blogs/${cleanSlug(blog.slug)}`} className="relative aspect-[16/9] overflow-hidden">
                     {blog.thumbnail_url ? (
                       <Image
                         src={blog.thumbnail_url}
@@ -62,12 +63,12 @@ export default async function BlogsPage() {
                     <div className="mb-3 text-xs text-muted-foreground">
                       {new Date(blog.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                     </div>
-                    <Link href={`/blogs/${blog.slug}`} className="mb-4 text-xl font-bold transition-colors group-hover:text-primary">
+                    <Link href={`/blogs/${cleanSlug(blog.slug)}`} className="mb-4 text-xl font-bold transition-colors group-hover:text-primary">
                       {blog.title}
                     </Link>
                     <div className="mt-auto">
                       <Link
-                        href={`/blogs/${blog.slug}`}
+                        href={`/blogs/${cleanSlug(blog.slug)}`}
                         className="inline-flex items-center text-sm font-semibold uppercase tracking-wider text-primary hover:underline"
                       >
                         Read More &rarr;

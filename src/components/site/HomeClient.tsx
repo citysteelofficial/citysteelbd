@@ -9,6 +9,7 @@ const ICONS: Record<string, any> = {
 };
 import Link from "next/link";
 import Image from "next/image";
+import { cleanSlug } from "@/lib/slug";
 
 import heroImg from "@/assets/hero-steel.jpg";
 import weldingImg from "@/assets/services-welding.jpg";
@@ -378,7 +379,7 @@ export function HomeClient({ latestBlogs, settings, latestProjects = [] }: HomeC
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {latestBlogs.slice(0, 3).map((blog: any) => (
-                <Link key={blog.id} href={`/blogs/${blog.slug}`} className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-soft transition-all hover:shadow-elegant">
+                <Link key={blog.id} href={`/blogs/${cleanSlug(blog.slug)}`} className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-soft transition-all hover:shadow-elegant">
                   <div className="relative aspect-[16/9] overflow-hidden">
                     {blog.thumbnail_url ? (
                       <Image src={blog.thumbnail_url} alt={blog.title} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
@@ -399,7 +400,7 @@ export function HomeClient({ latestBlogs, settings, latestProjects = [] }: HomeC
             {latestBlogs.length > 3 && (
               <div className="mt-6 grid gap-6 md:grid-cols-2">
                 {latestBlogs.slice(3, 5).map((blog: any) => (
-                  <Link key={blog.id} href={`/blogs/${blog.slug}`} className="group flex overflow-hidden rounded-xl border border-border bg-card shadow-soft transition-all hover:shadow-elegant">
+                  <Link key={blog.id} href={`/blogs/${cleanSlug(blog.slug)}`} className="group flex overflow-hidden rounded-xl border border-border bg-card shadow-soft transition-all hover:shadow-elegant">
                     <div className="relative w-32 flex-shrink-0 overflow-hidden">
                       {blog.thumbnail_url ? (
                         <Image src={blog.thumbnail_url} alt={blog.title} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />

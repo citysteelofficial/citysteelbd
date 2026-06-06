@@ -11,14 +11,35 @@ interface Props {
 
 export const revalidate = 60;
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+/**
+ * Try to find a blog by slug. Handles the case where the slug was
+ * stored with a "/blogs/" prefix in the database.
+ */
+async function findBlog(slug: string) {
+  // First try exact match with the clean slug
   const { data: blog } = await supabase
     .from('blogs')
     .select('*')
     .eq('slug', slug)
     .eq('is_published', true)
     .single();
+
+  if (blog) return blog;
+
+  // Fallback: try with "/blogs/" prefix (legacy data)
+  const { data: blogWithPrefix } = await supabase
+    .from('blogs')
+    .select('*')
+    .eq('slug', `/blogs/${slug}`)
+    .eq('is_published', true)
+    .single();
+
+  return blogWithPrefix || null;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const blog = await findBlog(slug);
   
   if (!blog) return { title: 'Blog Not Found' };
 
@@ -47,14 +68,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function BlogDetailsPage({ params }: Props) {
   const { slug } = await params;
-  const { data: blog, error } = await supabase
-    .from('blogs')
-    .select('*')
-    .eq('slug', slug)
-    .eq('is_published', true)
-    .single();
+  const blog = await findBlog(slug);
   
-  if (error || !blog) notFound();
+  if (!blog) notFound();
 
   // JSON-LD Article structured data
   const articleJsonLd = {
@@ -112,3 +128,4 @@ export default async function BlogDetailsPage({ params }: Props) {
     </PageShell>
   );
 }
+

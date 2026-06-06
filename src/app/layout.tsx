@@ -31,11 +31,11 @@ const SITE_NAME = "City Steel Corporation";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE_NAME} | Premium Industrial Steel Structures in Bangladesh`,
+    default: "City Steel Corporation | Steel Structure Company in Dhaka",
     template: `%s | ${SITE_NAME}`,
   },
   description:
-    "City Steel Corporation delivers premium pre-engineered steel buildings, trusses, roofing sheets, and industrial steel structures across Bangladesh. ISO-certified quality, 15+ years of experience.",
+    "Bangladesh-er leading PEB ar steel structure company. Factory, warehouse, commercial building design, fabrication ar erection. Dhaka, Shyamoli. 500+ projects.",
   keywords: [
     "steel structure Bangladesh",
     "pre-engineered building",
@@ -60,6 +60,9 @@ export const metadata: Metadata = {
     email: false,
     address: false,
     telephone: false,
+  },
+  verification: {
+    google: "UKC7sQXi_DKihfL_WzDzxVxO88Bm0gTgO4sqe4S4K20",
   },
   alternates: {
     canonical: SITE_URL,
@@ -99,14 +102,12 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  verification: {
-    // =========================================
-    // 🔑 REPLACE THESE WITH YOUR ACTUAL CODES
-    // =========================================
-    google: "YOUR_GOOGLE_SEARCH_CONSOLE_VERIFICATION_CODE",
-    // yandex: "YOUR_YANDEX_CODE",
-    // yahoo: "YOUR_YAHOO_CODE",
-  },
+  // =========================================
+  // 🔑 TODO: Uncomment and add your actual verification codes before production
+  // verification: {
+  //   google: "YOUR_ACTUAL_GOOGLE_SEARCH_CONSOLE_CODE",
+  // },
+  // =========================================
 };
 
 // JSON-LD Structured Data for Organization
@@ -224,10 +225,9 @@ export default async function RootLayout({
       >
         {/* ============================================
             Google Analytics (GA4)
-            Replace G-XXXXXXXXXX with your Measurement ID
             ============================================ */}
         <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"
+          src="https://www.googletagmanager.com/gtag/js?id=G-D2RXQZ3S1K"
           strategy="afterInteractive"
         />
         <Script id="google-analytics" strategy="afterInteractive">
@@ -235,7 +235,7 @@ export default async function RootLayout({
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-XXXXXXXXXX');
+            gtag('config', 'G-D2RXQZ3S1K');
           `}
         </Script>
 

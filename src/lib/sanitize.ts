@@ -1,8 +1,9 @@
-import DOMPurify from 'dompurify';
+import DOMPurify from 'isomorphic-dompurify';
 
 /**
  * Sanitize HTML content from the CMS to prevent XSS attacks.
  * Strips dangerous tags like <script>, <iframe>, event handlers, etc.
+ * Uses isomorphic-dompurify which works both on server (Node.js) and client (browser).
  */
 export function sanitizeHtml(dirty: string): string {
   return DOMPurify.sanitize(dirty, {

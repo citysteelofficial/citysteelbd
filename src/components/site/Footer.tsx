@@ -55,9 +55,9 @@ export function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Follow City Steel on Facebook"
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-[oklch(0.25_0_0)] text-[oklch(0.7_0_0)] transition-all hover:bg-primary hover:text-primary-foreground hover:scale-110"
+              className="flex h-12 w-12 items-center justify-center rounded-full bg-[#1877F2] text-white shadow-lg transition-transform hover:scale-110 hover:shadow-[#1877F2]/30"
             >
-              <FacebookIcon className="h-4 w-4" />
+              <FacebookIcon className="h-6 w-6" />
             </a>
           </div>
         </div>
@@ -119,15 +119,6 @@ export function Footer() {
         <div className="container-x flex flex-col items-center justify-between gap-3 py-6 text-xs uppercase tracking-widest text-[oklch(0.6_0_0)] sm:flex-row">
           <span>© {new Date().getFullYear()} City Steel Corporation</span>
           <div className="flex items-center gap-4">
-            <a
-              href={FACEBOOK_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Facebook"
-              className="transition-colors hover:text-primary"
-            >
-              <FacebookIcon className="h-4 w-4" />
-            </a>
             <span>Develop By <a href="https://techvilo.com" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-primary">Techvilo Ltd</a></span>
           </div>
         </div>

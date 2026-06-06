@@ -16,6 +16,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: project.seo_title || `${project.title} | City Steel Corporation`,
     description: project.seo_description || project.description || '',
+    alternates: {
+      canonical: `https://citysteelbd.com/project/${slug}`,
+    },
     openGraph: {
       title: project.seo_title || project.title,
       images: project.image_url ? [project.image_url] : [],

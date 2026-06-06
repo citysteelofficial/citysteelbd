@@ -4,6 +4,7 @@ import { PageShell, PageHeader } from '@/components/site/PageShell';
 import { ServiceDetailGallery } from '@/components/site/ServiceDetailGallery';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
+import { sanitizeHtml } from '@/lib/sanitize';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -22,6 +23,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: service.seo_title || `${service.title} | City Steel Corporation`,
     description: service.seo_description || service.description,
+    alternates: {
+      canonical: `https://citysteelbd.com/service/${slug}`,
+    },
   };
 }
 
@@ -55,7 +59,7 @@ export default async function ServiceDetailsPage({ params }: Props) {
             {/* Content */}
             <div className="prose prose-slate dark:prose-invert max-w-4xl leading-relaxed">
               {service.content ? (
-                <div dangerouslySetInnerHTML={{ __html: service.content }} />
+                <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(service.content) }} />
               ) : (
                 <p className="text-lg text-muted-foreground">
                   {service.description}

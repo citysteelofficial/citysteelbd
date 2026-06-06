@@ -5,6 +5,7 @@ import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronRight, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { sanitizeHtml } from '@/lib/sanitize';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -24,6 +25,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: product.seo_title || `${product.title} | City Steel Corporation`,
     description: product.seo_description || product.description,
+    alternates: {
+      canonical: `https://citysteelbd.com/product/${slug}`,
+    },
   };
 }
 
@@ -171,7 +175,7 @@ export default async function SingleProductPage({ params }: Props) {
               <h2 className="font-display text-3xl font-bold uppercase mb-10">Product Description</h2>
               <div 
                 className="prose prose-lg dark:prose-invert max-w-4xl prose-headings:font-display prose-headings:uppercase prose-a:text-primary prose-img:rounded-xl"
-                dangerouslySetInnerHTML={{ __html: product.content }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(product.content) }}
               />
             </div>
           )}

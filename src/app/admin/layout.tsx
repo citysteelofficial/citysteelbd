@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { LayoutDashboard, Package, Briefcase, FileText, Settings, LogOut, MessageSquare, Wrench, Home, ChevronDown, LayoutTemplate, ListChecks, Info, GraduationCap } from 'lucide-react';
+import { LayoutDashboard, Package, Briefcase, FileText, Settings, LogOut, MessageSquare, Wrench, Home, ChevronDown, LayoutTemplate, ListChecks, Info, GraduationCap, Menu, X } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -12,6 +12,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const [loading, setLoading] = useState(true);
   const [isHomeOpen, setIsHomeOpen] = useState(true);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
 
   const isLoginPage = pathname === '/admin/login';
@@ -62,8 +63,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className="flex min-h-screen bg-muted/40">
+      {/* Mobile header bar */}
+      <div className="fixed top-0 left-0 right-0 z-20 flex h-14 items-center justify-between border-b bg-background px-4 sm:hidden">
+        <Link href="/" className="font-bold text-primary text-sm">City Steel Admin</Link>
+        <button onClick={() => setMobileOpen(!mobileOpen)} className="p-2 text-muted-foreground hover:text-foreground">
+          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </button>
+      </div>
+
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-10 bg-black/50 sm:hidden" onClick={() => setMobileOpen(false)} />
+      )}
+
       {/* Sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-10 hidden w-64 flex-col border-r bg-background sm:flex">
+      <aside className={`fixed inset-y-0 left-0 z-20 w-64 flex-col border-r bg-background transition-transform duration-300 ${mobileOpen ? 'translate-x-0 flex' : '-translate-x-full'} sm:translate-x-0 sm:flex`}>
         <div className="flex h-14 items-center border-b px-6">
           <Link href="/" className="flex items-center gap-2 font-bold text-primary">
             <span>City Steel Admin</span>
@@ -134,7 +148,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex flex-1 flex-col sm:pl-64">
+      <main className="flex flex-1 flex-col pt-14 sm:pt-0 sm:pl-64">
         {children}
       </main>
     </div>
