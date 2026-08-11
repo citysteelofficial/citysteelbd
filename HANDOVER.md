@@ -105,6 +105,7 @@ safe to re-run in the Supabase dashboard → SQL Editor.
 | `setup_job_circulars.sql` | `job_circulars` |
 | `update_products_schema.sql` | adds `products.specifications` (JSONB) |
 | `update_about_settings.sql` | adds the `about_*` columns to `site_settings` |
+| `setup_redirects.sql` | `redirects`, `not_found_log`, and their helper functions |
 
 **`site_settings` always has exactly one row, `id = 1`.** The admin About and
 Home screens update that row in place.
@@ -158,9 +159,10 @@ tags and attributes and permits iframes only from YouTube and Vimeo.
 `supabase.auth.getSession()`, subscribes to `onAuthStateChange`, and renders a
 spinner instead of the admin shell until a session is confirmed.
 
-**Sessions live in `localStorage`, not cookies.** That is why there is no
-`proxy.ts` (the Next 16 replacement for `middleware.ts`) doing auth — server
-middleware cannot see a localStorage session, and adding a naive one would lock
+**Sessions live in `localStorage`, not cookies.** That is why `src/proxy.ts`
+(the Next 16 replacement for `middleware.ts`) handles redirects but deliberately
+does **not** do auth, and why its matcher excludes `/admin` entirely: server
+middleware cannot see a localStorage session, so a naive guard there would lock
 the client out of their own panel. Real server-side route protection requires
 migrating to `@supabase/ssr` with cookie-based sessions first.
 
@@ -194,7 +196,51 @@ and the form prefills that subject on mount.
 
 ---
 
-## 9. Deployment
+## 9. URL redirects and the 404 log
+
+The client manages redirects themselves at **`/admin/redirects`** — no deploy
+needed. Used to point URLs that Google still has indexed at the pages that
+replaced them.
+
+**How a request flows** (`src/proxy.ts`):
+
+1. `proxy.ts` runs ahead of routing on every page request.
+2. It loads all active rules from `redirects` and keeps them in a module-scope
+   `Map`, refreshed at most once every 60 seconds per server instance. So a rule
+   added in the admin panel goes live **within about a minute**.
+3. A matching path returns `NextResponse.redirect` with the rule's 301 or 302.
+4. Anything else falls through to normal routing.
+
+Everything in that path **fails open**: if Supabase is unreachable the proxy
+serves the last known rule set, or none at all, and the site keeps working. It
+was verified against a stub backend covering case-insensitive matching, query
+string preservation, `.html` legacy paths, external targets, and self-referential
+rules (which are refused rather than looping).
+
+`src/lib/paths.ts` owns the canonical path form — lowercase, leading slash, no
+trailing slash. **Both the proxy and the admin panel must normalise through
+it**, or a rule saved in one form will never match a request in another.
+`isValidTarget()` rejects anything that is not a site-relative path or an
+`http(s)` URL, so an admin typo cannot become an open redirect.
+
+**The 404 log** (`not_found_log`) fills itself in: `src/app/not-found.tsx`
+renders `NotFoundLogger`, which calls the `log_not_found` RPC from the browser.
+One row per path with a hit counter, so a crawler hammering a dead URL cannot
+flood the table.
+
+> The obvious server-side alternative — reading `headers()` in `not-found.tsx`
+> — was tried and reverted. That file belongs to every route's tree, so a
+> dynamic API in it drops **the entire site** out of static generation. The
+> cost is that only JS-capable clients are logged; Googlebot qualifies, simpler
+> crawlers do not.
+
+**When adding a redirect, do not create one for a URL that still works** — the
+old page would become unreachable. Rules are matched before routing, so they win
+over real pages.
+
+---
+
+## 10. Deployment
 
 Push to `main` → Vercel builds and deploys automatically. There is no
 `vercel.json`; the project uses Vercel's Next.js defaults.
@@ -213,7 +259,7 @@ npx next start -p 3111
 
 ---
 
-## 10. Known gaps / possible next steps
+## 11. Known gaps / possible next steps
 
 Not bugs — deliberate scope boundaries, recorded so the next person does not
 rediscover them.
@@ -238,7 +284,7 @@ rediscover them.
 
 ---
 
-## 11. Gotchas
+## 12. Gotchas
 
 - **This is Next.js 16.** `middleware.ts` is now `proxy.ts`; several caching
   APIs changed. Read `node_modules/next/dist/docs/` before assuming an older
