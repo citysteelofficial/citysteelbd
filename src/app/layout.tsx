@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_NAME}`,
   },
   description:
-    "Bangladesh-er leading PEB ar steel structure company. Factory, warehouse, commercial building design, fabrication ar erection. Dhaka, Shyamoli. 500+ projects.",
+    "Leading pre-engineered building (PEB) and steel structure company in Bangladesh. Factory, warehouse, and commercial building design, fabrication, and erection. Based in Shyamoli, Dhaka with 500+ completed projects.",
   keywords: [
     "steel structure Bangladesh",
     "pre-engineered building",
@@ -102,12 +102,6 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  // =========================================
-  // 🔑 TODO: Uncomment and add your actual verification codes before production
-  // verification: {
-  //   google: "YOUR_ACTUAL_GOOGLE_SEARCH_CONSOLE_CODE",
-  // },
-  // =========================================
 };
 
 // JSON-LD Structured Data for Organization

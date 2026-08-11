@@ -34,3 +34,6 @@ out
 *.sw?
 .env
 
+
+# Build artifacts
+tsconfig.tsbuildinfo

@@ -4,13 +4,14 @@
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { LayoutDashboard, Package, Briefcase, FileText, Settings, LogOut, MessageSquare, Wrench, Home, ChevronDown, LayoutTemplate, ListChecks, Info, GraduationCap, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Package, Briefcase, FileText, LogOut, MessageSquare, Wrench, Home, ChevronDown, LayoutTemplate, ListChecks, Info, GraduationCap, Menu, X } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const [loading, setLoading] = useState(true);
+  const [authed, setAuthed] = useState(false);
   const [isHomeOpen, setIsHomeOpen] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -20,6 +21,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   useEffect(() => {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
+      setAuthed(!!session);
       if (!session && !isLoginPage) {
         router.push('/admin/login');
       }
@@ -29,7 +31,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     checkUser();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-
+      setAuthed(!!session);
       if (!session && !isLoginPage) {
         router.push('/admin/login');
       }
@@ -54,6 +56,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   // On login page, render ONLY the login form without sidebar
   if (isLoginPage) {
     return <>{children}</>;
+  }
+
+  // Never paint the admin shell or its children for a signed-out visitor.
+  // Without this the panel flashes on screen while the redirect is in flight.
+  if (!authed) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      </div>
+    );
   }
 
   const isActive = (href: string) => {

@@ -109,7 +109,7 @@ export default async function CareerPage() {
                     </div>
                   </div>
                   <Link
-                    href="/contact"
+                    href={`/contact?subject=${encodeURIComponent(`Job Application: ${j.title}`)}`}
                     className="inline-flex items-center gap-2 border border-primary px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-foreground transition-colors hover:bg-primary hover:text-primary-foreground shrink-0 self-start md:self-center"
                   >
                     Apply <ArrowRight className="h-3 w-3" />

@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { PageShell, PageHeader } from "@/components/site/PageShell";
+import { supabase } from "@/lib/supabase";
 
 export const metadata: Metadata = {
   title: "Products — Industrial Steel Building Components",
-  description: "Browse premium steel building products: pre-engineered buildings, trusses, roofing sheets, purlins, crane beams, mezzanine floors, and more from City Steel Corporation.",
+  description: "Browse premium steel building products: steel columns, beams, purlins, rafters, roof and deck sheets, sliding doors, and more from City Steel Corporation.",
   alternates: { canonical: "https://citysteelbd.com/products" },
   openGraph: {
     title: "Our Products | City Steel Corporation",
@@ -13,18 +14,16 @@ export const metadata: Metadata = {
   },
 };
 
-const products = [
-  { t: "Pre-Engineered Buildings (PEB)", d: "Custom-designed steel buildings for warehouses, factories, and commercial use." },
-  { t: "Steel Trusses & Frames", d: "Heavy-duty welded and bolted trusses engineered to load specifications." },
-  { t: "Roofing & Wall Sheets", d: "Color-coated, galvanized, and insulated panels for any climate." },
-  { t: "Purlins & Girts", d: "Cold-formed C and Z sections for roof and wall framing." },
-  { t: "Crane Beams & Runways", d: "Heavy-duty overhead crane support structures." },
-  { t: "Mezzanine Floors", d: "Multi-level steel floor systems for added capacity." },
-  { t: "Skylights & Ventilators", d: "Natural lighting and ventilation accessories." },
-  { t: "Steel Doors & Windows", d: "Industrial-grade steel openings and frames." },
-];
+export const revalidate = 60;
 
-export default function ProductsPage() {
+export default async function ProductsPage() {
+  const { data: categories } = await supabase
+    .from("product_categories")
+    .select("title, slug")
+    .order("created_at", { ascending: true });
+
+  const items = categories || [];
+
   return (
     <PageShell>
       <PageHeader
@@ -34,21 +33,38 @@ export default function ProductsPage() {
       />
 
       <section className="py-24">
-        <div className="container-x grid gap-px bg-border md:grid-cols-2 lg:grid-cols-3">
-          {products.map((p, i) => (
-            <div
-              key={p.t}
-              className="group relative bg-background p-10 transition-all hover:bg-surface"
-            >
-              <div className="mb-6 font-display text-6xl font-black text-primary/20">
-                {String(i + 1).padStart(2, "0")}
-              </div>
-              <h3 className="mb-3 font-display text-2xl font-bold leading-tight">{p.t}</h3>
-              <p className="text-sm leading-relaxed text-muted-foreground">{p.d}</p>
-              <div className="absolute bottom-0 left-0 h-1 w-0 bg-gradient-primary transition-all duration-500 group-hover:w-full" />
+        {items.length === 0 ? (
+          <div className="container-x">
+            <div className="rounded-xl border border-border bg-surface py-20 text-center shadow-soft">
+              <h2 className="mb-2 text-xl font-bold">Product Catalogue Coming Soon</h2>
+              <p className="text-muted-foreground">
+                We are currently updating our catalogue. Please contact us directly for product details.
+              </p>
             </div>
-          ))}
-        </div>
+          </div>
+        ) : (
+          <div className="container-x grid gap-px bg-border md:grid-cols-2 lg:grid-cols-3">
+            {items.map((c, i) => (
+              <Link
+                key={c.slug}
+                href={`/products/${c.slug}`}
+                className="group relative bg-background p-10 transition-all hover:bg-surface"
+              >
+                <div className="mb-6 font-display text-6xl font-black text-primary/20 transition-colors group-hover:text-primary/40">
+                  {String(i + 1).padStart(2, "0")}
+                </div>
+                <h2 className="mb-3 font-display text-2xl font-bold uppercase leading-tight">
+                  {c.title}
+                </h2>
+                <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
+                  View Products
+                  <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                </span>
+                <div className="absolute bottom-0 left-0 h-1 w-0 bg-gradient-primary transition-all duration-500 group-hover:w-full" />
+              </Link>
+            ))}
+          </div>
+        )}
 
         <div className="container-x mt-16 text-center">
           <Link

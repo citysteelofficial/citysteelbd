@@ -1,30 +1,93 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Mail, Phone, Send, Loader2, CheckCircle, AlertCircle, Clock, Building2, Factory } from "lucide-react";
 import { PageShell, PageHeader } from "@/components/site/PageShell";
 import { supabase } from "@/lib/supabase";
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const MIN_FILL_SECONDS = 3;
+
 export function ContactClient() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
+  const [whatsappUrl, setWhatsappUrl] = useState('');
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', subject: '', message: '' });
+
+  // Bot traps: a field no human can see, plus the time the form was rendered.
+  // Scripted submissions fill every input and post almost instantly.
+  const [honeypot, setHoneypot] = useState('');
+  const mountedAt = useRef<number | null>(null);
+
+  useEffect(() => {
+    mountedAt.current = Date.now();
+  }, []);
+
+  // The Career page links here with the job title already in the query string.
+  // Read it from the URL directly rather than with useSearchParams: that hook
+  // would force this whole subtree behind a Suspense boundary and drop the
+  // contact details out of the server-rendered HTML. Syncing once on mount from
+  // an external source (the URL) is the intended use of an effect here — the
+  // server cannot know the query string for a statically rendered page.
+  useEffect(() => {
+    const subject = new URLSearchParams(window.location.search).get('subject');
+    if (subject) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setFormData(prev => (prev.subject ? prev : { ...prev, subject: subject.slice(0, 150) }));
+    }
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  const validate = () => {
+    const name = formData.name.trim();
+    const email = formData.email.trim();
+    const message = formData.message.trim();
+
+    if (name.length < 2) return 'Please enter your full name.';
+    if (name.length > 100) return 'Name is too long.';
+    if (!EMAIL_PATTERN.test(email)) return 'Please enter a valid email address.';
+    if (formData.phone.trim().length > 30) return 'Phone number is too long.';
+    if (formData.subject.trim().length > 150) return 'Subject is too long.';
+    if (message.length < 10) return 'Please describe your requirement in at least 10 characters.';
+    if (message.length > 5000) return 'Message is too long. Please keep it under 5000 characters.';
+    return null;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Silently accept honeypot hits so bots get no signal that they were caught.
+    // A null mount time means the effect has not run yet, so skip the timing
+    // check rather than punishing a genuine user for a race we caused.
+    const elapsedSeconds = mountedAt.current === null
+      ? Infinity
+      : (Date.now() - mountedAt.current) / 1000;
+    if (honeypot.trim() !== '' || elapsedSeconds < MIN_FILL_SECONDS) {
+      setStatus('success');
+      setWhatsappUrl('');
+      setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+      return;
+    }
+
+    const validationError = validate();
+    if (validationError) {
+      setStatus('error');
+      setErrorMsg(validationError);
+      return;
+    }
+
     setStatus('loading');
     setErrorMsg('');
 
     const { error } = await supabase.from('contact_messages').insert([{
-      name: formData.name,
-      email: formData.email,
-      phone: formData.phone || null,
-      subject: formData.subject || null,
-      message: formData.message,
+      name: formData.name.trim(),
+      email: formData.email.trim(),
+      phone: formData.phone.trim() || null,
+      subject: formData.subject.trim() || null,
+      message: formData.message.trim(),
     }]);
 
     if (error) {
@@ -34,22 +97,25 @@ export function ContactClient() {
     } else {
       // Create WhatsApp message format
       const waMessage = `*New Contact Request*
-*Name:* ${formData.name}
-*Email:* ${formData.email}
-*Phone:* ${formData.phone || 'N/A'}
-*Subject:* ${formData.subject || 'N/A'}
+*Name:* ${formData.name.trim()}
+*Email:* ${formData.email.trim()}
+*Phone:* ${formData.phone.trim() || 'N/A'}
+*Subject:* ${formData.subject.trim() || 'N/A'}
 *Message:*
-${formData.message}`;
+${formData.message.trim()}`;
 
       const encodedMessage = encodeURIComponent(waMessage);
       // Ensure the phone number format is correct (include country code without + or 00)
       const waUrl = `https://wa.me/8801711787556?text=${encodedMessage}`;
 
-      // Open WhatsApp in a new tab/app
-      window.open(waUrl, '_blank');
+      // Opening after an await loses the user-activation gesture in some
+      // browsers, so keep the URL around to offer as a manual link instead.
+      const opened = window.open(waUrl, '_blank');
+      setWhatsappUrl(opened ? '' : waUrl);
 
       setStatus('success');
       setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+      mountedAt.current = Date.now();
     }
   };
 
@@ -122,7 +188,7 @@ ${formData.message}`;
             </div>
           </div>
 
-          <form className="border border-border bg-surface p-8 lg:col-span-3" onSubmit={handleSubmit}>
+          <form className="relative border border-border bg-surface p-8 lg:col-span-3" onSubmit={handleSubmit}>
             <h2 className="mb-6 font-display text-3xl font-bold uppercase">
               Send Us a <span className="text-gradient-red">Message</span>
             </h2>
@@ -132,7 +198,18 @@ ${formData.message}`;
                 <CheckCircle className="mx-auto h-10 w-10 text-green-600 mb-3" />
                 <div className="mb-2 font-display text-2xl font-bold text-green-700">Thank you!</div>
                 <p className="text-sm text-green-600">Your message has been received.</p>
-                <p className="text-sm text-green-600 font-medium mt-2">WhatsApp has been opened automatically. Please press &quot;Send&quot; to forward your message directly to our team.</p>
+                {whatsappUrl ? (
+                  <a
+                    href={whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 inline-flex items-center gap-2 rounded-lg bg-green-600 px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-green-700"
+                  >
+                    Also send via WhatsApp <Send className="h-3.5 w-3.5" />
+                  </a>
+                ) : (
+                  <p className="text-sm text-green-600 font-medium mt-2">WhatsApp has been opened automatically. Please press &quot;Send&quot; to forward your message directly to our team.</p>
+                )}
                 <button
                   type="button"
                   onClick={() => setStatus('idle')}
@@ -149,6 +226,20 @@ ${formData.message}`;
                     {errorMsg}
                   </div>
                 )}
+                {/* Honeypot — hidden from humans, irresistible to bots. */}
+                <div className="absolute left-[-9999px] top-auto h-px w-px overflow-hidden" aria-hidden="true">
+                  <label htmlFor="company-website">Company website</label>
+                  <input
+                    id="company-website"
+                    name="company_website"
+                    type="text"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={honeypot}
+                    onChange={(e) => setHoneypot(e.target.value)}
+                  />
+                </div>
+
                 <div className="grid gap-4 md:grid-cols-2">
                   <Field label="Full Name" name="name" value={formData.name} onChange={handleChange} required />
                   <Field label="Email" name="email" type="email" value={formData.email} onChange={handleChange} required />

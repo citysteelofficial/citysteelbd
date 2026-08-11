@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
-import { Factory, Building2, HardHat, Wrench, Shield, Cog, Hammer, Ruler } from "lucide-react";
+import Link from "next/link";
+import { Factory, Building2, HardHat, Wrench, Shield, Cog, Hammer, Ruler, ArrowUpRight } from "lucide-react";
 import { PageShell, PageHeader } from "@/components/site/PageShell";
+import { supabase } from "@/lib/supabase";
 
 export const metadata: Metadata = {
   title: "Services — Steel Structure Design, Fabrication & Erection",
-  description: "Comprehensive steel structure services: engineering design, PEB fabrication, erection & installation, roofing & cladding, and full Design & Build packages across Bangladesh.",
+  description: "Steel structure services from City Steel Corporation: structural design & drawing, architectural design, civil construction, steel building product supply, interior solutions, and complete Design & Build packages across Bangladesh.",
   alternates: { canonical: "https://citysteelbd.com/services" },
   openGraph: {
     title: "Our Services | City Steel Corporation",
@@ -12,18 +14,29 @@ export const metadata: Metadata = {
   },
 };
 
-const services = [
-  { Icon: Ruler, t: "Engineering & Design", d: "Structural analysis, 3D modeling, and detailed shop drawings." },
-  { Icon: Factory, t: "Pre-Engineered Buildings", d: "End-to-end PEB design tailored to your industrial needs." },
-  { Icon: Hammer, t: "Steel Fabrication", d: "In-house fabrication with strict QC at every weld." },
-  { Icon: HardHat, t: "Erection & Installation", d: "Skilled erection crews and project management on-site." },
-  { Icon: Wrench, t: "Design & Build", d: "Single-source responsibility from concept to handover." },
-  { Icon: Cog, t: "Roofing & Cladding", d: "Insulated and standard panel systems for any envelope." },
-  { Icon: Shield, t: "Quality Assurance", d: "ISO-aligned QA/QC across material, welds, and erection." },
-  { Icon: Building2, t: "Renovation & Retrofit", d: "Strengthening and modernization of existing structures." },
-];
+export const revalidate = 60;
 
-export default function ServicesPage() {
+// Icons are assigned by position so every service gets a stable, distinct mark
+// without requiring the client to pick one in the admin panel.
+const ICONS = [Ruler, Factory, Hammer, HardHat, Wrench, Cog, Shield, Building2];
+
+const COLUMNS = 4;
+
+export default async function ServicesPage() {
+  const { data } = await supabase
+    .from("services")
+    .select("title, slug, description")
+    .order("created_at", { ascending: false });
+
+  const services = (data || []).map((s) => ({
+    ...s,
+    title: (s.title || "").trim(),
+  }));
+
+  // The grid uses a 1px gap over a border-coloured background to get seamless
+  // dividers, so an incomplete final row needs filler cells to stay clean.
+  const fillerCount = services.length % COLUMNS === 0 ? 0 : COLUMNS - (services.length % COLUMNS);
+
   return (
     <PageShell>
       <PageHeader
@@ -33,20 +46,46 @@ export default function ServicesPage() {
       />
 
       <section className="py-24">
-        <div className="container-x grid gap-px bg-border md:grid-cols-2 lg:grid-cols-4">
-          {services.map(({ Icon, t, d }) => (
-            <div
-              key={t}
-              className="group relative bg-background p-8 transition-all hover:bg-surface"
-            >
-              <div className="mb-6 flex h-14 w-14 items-center justify-center bg-gradient-primary shadow-red transition-transform group-hover:scale-110">
-                <Icon className="h-6 w-6 text-primary-foreground" />
-              </div>
-              <h3 className="mb-3 font-display text-lg font-bold leading-tight">{t}</h3>
-              <p className="text-sm leading-relaxed text-muted-foreground">{d}</p>
+        {services.length === 0 ? (
+          <div className="container-x">
+            <div className="rounded-xl border border-border bg-surface py-20 text-center shadow-soft">
+              <h2 className="mb-2 text-xl font-bold">Services Coming Soon</h2>
+              <p className="text-muted-foreground">
+                Please contact us directly to discuss your project requirements.
+              </p>
             </div>
-          ))}
-        </div>
+          </div>
+        ) : (
+          <div className="container-x grid gap-px bg-border md:grid-cols-2 lg:grid-cols-4">
+            {services.map((s, i) => {
+              const Icon = ICONS[i % ICONS.length];
+              return (
+                <Link
+                  key={s.slug}
+                  href={`/service/${s.slug}`}
+                  className="group relative bg-background p-8 transition-all hover:bg-surface"
+                >
+                  <div className="mb-6 flex h-14 w-14 items-center justify-center bg-gradient-primary shadow-red transition-transform group-hover:scale-110">
+                    <Icon className="h-6 w-6 text-primary-foreground" />
+                  </div>
+                  <h2 className="mb-3 font-display text-lg font-bold leading-tight">{s.title}</h2>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {s.description?.trim()
+                      ? s.description
+                      : `Professional ${s.title.toLowerCase()} delivered by City Steel Corporation's in-house engineering team.`}
+                  </p>
+                  <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
+                    Learn More
+                    <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  </span>
+                </Link>
+              );
+            })}
+            {Array.from({ length: fillerCount }).map((_, i) => (
+              <div key={`filler-${i}`} className="hidden bg-background lg:block" />
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="border-t border-border bg-surface py-24">

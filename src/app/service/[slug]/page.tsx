@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { supabase } from '@/lib/supabase';
 import { PageShell, PageHeader } from '@/components/site/PageShell';
 import { ServiceDetailGallery } from '@/components/site/ServiceDetailGallery';
@@ -9,6 +8,8 @@ import { sanitizeHtml } from '@/lib/sanitize';
 interface Props {
   params: Promise<{ slug: string }>;
 }
+
+export const revalidate = 60;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;

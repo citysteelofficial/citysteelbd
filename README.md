@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# City Steel BD
 
-## Getting Started
+Marketing website and self-service CMS for **City Steel Corporation** — a
+pre-engineered steel building (PEB) manufacturer in Dhaka, Bangladesh.
 
-First, run the development server:
+Live at **[citysteelbd.com](https://citysteelbd.com)**.
+
+Built with Next.js 16 (App Router), React 19, Tailwind CSS v4, and Supabase.
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env     # then fill in the Supabase values
+npm run dev              # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The admin panel is at `/admin`. Accounts are created in the Supabase dashboard
+under Authentication → Users; there is no public signup.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Command | Does |
+|---|---|
+| `npm run dev` | Development server |
+| `npm run build` | Production build — typechecks and prerenders every route |
+| `npm start` | Serve a production build locally |
+| `npm run lint` | ESLint |
 
-## Learn More
+Run `npm run build` before pushing. `main` auto-deploys to Vercel.
 
-To learn more about Next.js, take a look at the following resources:
+## Database
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Supabase Postgres. The idempotent SQL setup scripts live at the repo root and
+can be re-run safely in the Supabase SQL Editor — start with
+`supabase_schema.sql`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Documentation
 
-## Deploy on Vercel
+**[HANDOVER.md](HANDOVER.md)** is the real reference: routing map, database
+conventions, RLS rules, auth design, deployment, and known gaps. Read it before
+making changes.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`AGENTS.md` carries instructions for AI coding agents working in this repo.

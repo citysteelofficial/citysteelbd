@@ -4,6 +4,11 @@ import { cleanSlug } from '@/lib/slug';
 
 const BASE_URL = 'https://citysteelbd.com';
 
+// Without this the sitemap is prerendered once at build time, so content the
+// client publishes through the admin panel never reaches search engines until
+// the next deploy. One hour keeps it fresh without hammering Supabase.
+export const revalidate = 3600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Static pages
   const staticPages: MetadataRoute.Sitemap = [

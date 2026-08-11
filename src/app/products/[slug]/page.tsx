@@ -1,21 +1,41 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { supabase } from '@/lib/supabase';
 import { PageShell, PageHeader } from '@/components/site/PageShell';
 import { ProductGrid } from '@/components/site/ProductGrid';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
+/**
+ * Look the category up in the database rather than prettifying the slug.
+ * An unknown slug must 404 instead of rendering an empty page with an
+ * invented title, which search engines treat as a soft 404.
+ */
+async function getCategory(slug: string) {
+  const { data } = await supabase
+    .from('product_categories')
+    .select('title, slug')
+    .eq('slug', slug)
+    .maybeSingle();
+
+  return data;
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const categoryTitle = slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-  
+  const category = await getCategory(slug);
+
+  if (!category) return { title: 'Category Not Found' };
+
   return {
-    title: `${categoryTitle} | City Steel Corporation`,
-    description: `Browse our premium selection of ${categoryTitle} products for industrial steel structures.`,
+    title: `${category.title} | City Steel Corporation`,
+    description: `Browse our premium selection of ${category.title.toLowerCase()} for industrial steel structures, manufactured and supplied by City Steel Corporation.`,
+    alternates: {
+      canonical: `https://citysteelbd.com/products/${slug}`,
+    },
   };
 }
 
@@ -23,21 +43,24 @@ export const revalidate = 60;
 
 export default async function ProductCategoryPage({ params }: Props) {
   const { slug } = await params;
-  
+  const category = await getCategory(slug);
+
+  if (!category) notFound();
+
   const { data: products } = await supabase
     .from('products')
     .select('*')
     .eq('category', slug)
     .order('created_at', { ascending: false });
 
-  const categoryTitle = slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  const categoryTitle = category.title;
 
   return (
     <PageShell>
       <PageHeader
         eyebrow="Our Products"
         title={categoryTitle}
-        description={`Explore our high-quality ${categoryTitle} solutions designed for durability and performance in industrial applications.`}
+        description={`Explore our high-quality ${categoryTitle.toLowerCase()} solutions designed for durability and performance in industrial applications.`}
       />
 
       <section className="bg-surface py-24">
@@ -45,7 +68,7 @@ export default async function ProductCategoryPage({ params }: Props) {
           {!products || products.length === 0 ? (
             <div className="text-center py-20 bg-background rounded-xl border border-border shadow-soft">
               <PackageIcon className="mx-auto h-12 w-12 text-muted-foreground opacity-50 mb-4" />
-              <h3 className="text-xl font-bold mb-2">No Products Available</h3>
+              <h2 className="text-xl font-bold mb-2">No Products Available</h2>
               <p className="text-muted-foreground">We are currently updating our inventory for {categoryTitle}. Please check back later or contact us directly.</p>
               <Link href="/contact" className="mt-6 inline-flex items-center justify-center rounded-md bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground shadow transition-colors hover:bg-primary/90">
                 Contact Us

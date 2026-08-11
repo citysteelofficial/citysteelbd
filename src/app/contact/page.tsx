@@ -11,6 +11,11 @@ export const metadata: Metadata = {
   },
 };
 
+// The root layout builds the header menu from Supabase. Without a revalidate
+// window this page stays frozen at build time and its navigation goes stale
+// whenever the client adds a product category or service.
+export const revalidate = 60;
+
 export default function ContactPage() {
   return <ContactClient />;
 }
