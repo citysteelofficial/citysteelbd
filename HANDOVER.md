@@ -147,6 +147,32 @@ Its HTML is stored raw in the database and rendered with
 `sanitizeHtml()` from `src/lib/sanitize.ts` first.** That helper allow-lists
 tags and attributes and permits iframes only from YouTube and Vimeo.
 
+Beyond XSS, `sanitizeHtml()` also normalises what editors paste out of Word and
+Google Docs, which arrives carrying hard-coded colours, white backgrounds, and
+non-breaking spaces:
+
+- `allowedStyles` keeps only `text-align`, so pasted colours cannot fight the
+  site theme (one real product had 114 inline colours and 57 white backgrounds)
+- non-breaking spaces become ordinary spaces, so text wraps normally instead of
+  breaking mid-word
+- `transformTags` demotes `h1` to `h2`, because every page template already
+  renders its own title as the h1
+
+### The `prose` classes need a plugin
+
+CMS content is rendered inside `prose` containers. Those classes come from
+**`@tailwindcss/typography`**, loaded in `src/app/globals.css` via Tailwind v4's
+`@plugin` directive:
+
+```css
+@plugin "@tailwindcss/typography";
+```
+
+Without it the classes are inert and Preflight leaves every heading at body size
+with no margins — admin-formatted content silently loses all its hierarchy while
+looking fine in the editor. If rich text ever renders flat again, check that this
+plugin is still installed and imported before looking anywhere else.
+
 > Historical note: an earlier version used `isomorphic-dompurify`, which
 > crashed in server components. Do not reintroduce it — `sanitize-html` is
 > pure JS and safe in both environments.

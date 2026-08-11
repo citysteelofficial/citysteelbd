@@ -1,6 +1,11 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Powers every `prose` class used to render CMS rich text. Without it those
+   classes are inert and Preflight leaves headings at body size with no
+   margins, which is how admin-formatted content lost its hierarchy. */
+@plugin "@tailwindcss/typography";
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
