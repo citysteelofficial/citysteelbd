@@ -29,7 +29,7 @@ const ICONS: Record<string, any> = {
 
 export const metadata: Metadata = {
   title: "About Us — Our Story, Mission & Vision",
-  description: "City Steel Corporation is a leading industrial steel structure provider in Bangladesh, committed to innovation, quality, and client satisfaction since 2009. 500+ projects, ISO-certified.",
+  description: "City Steel Corporation is a leading industrial steel structure provider in Bangladesh, committed to innovation, quality, and client satisfaction since 2015. 150+ projects, ISO-certified.",
   alternates: { canonical: "https://citysteelbd.com/about" },
   openGraph: {
     title: "About City Steel Corporation",

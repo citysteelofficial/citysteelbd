@@ -108,7 +108,7 @@ export function HomeClient({ latestBlogs, settings, latestProjects = [] }: HomeC
               {((settings?.hero_top_text && settings.hero_top_text.includes(' · ')) || !settings?.hero_top_text) && (
                 <>
                   <span className="text-[11px] font-extrabold uppercase tracking-[0.25em] text-primary">
-                    {settings?.hero_top_text ? settings.hero_top_text.split(' · ')[1] : 'Est. 2009'}
+                    {settings?.hero_top_text ? settings.hero_top_text.split(' · ')[1] : 'Est. 2015'}
                   </span>
                   <span className="text-[11px] font-medium text-muted-foreground/40">|</span>
                 </>
@@ -141,8 +141,8 @@ export function HomeClient({ latestBlogs, settings, latestProjects = [] }: HomeC
 
             <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-3 border-t border-[oklch(0.98_0_0/0.15)] pt-5">
               {[
-                { n: settings?.projects_count || "500+", l: settings?.projects_label || "Projects" },
-                { n: settings?.years_count || "15+", l: settings?.years_label || "Years" },
+                { n: settings?.projects_count || "150+", l: settings?.projects_label || "Projects" },
+                { n: settings?.years_count || "10+", l: settings?.years_label || "Years" },
                 { n: settings?.clients_count || "200+", l: settings?.clients_label || "Clients" },
                 { n: settings?.certification_count || "ISO", l: settings?.certification_label || "Certified" },
               ].map((s) => (
@@ -210,7 +210,7 @@ export function HomeClient({ latestBlogs, settings, latestProjects = [] }: HomeC
             />
             <div className="absolute -bottom-6 -right-6 bg-gradient-primary p-6 shadow-red">
               <div className="font-display text-4xl font-black text-primary-foreground">
-                {settings?.years_count || "15+"}
+                {settings?.years_count || "10+"}
               </div>
               <div className="text-xs font-bold uppercase tracking-widest text-primary-foreground">
                 {settings?.years_label ? `${settings.years_label} of Mastery` : "Years of Mastery"}
