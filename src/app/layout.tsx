@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     template: `%s | ${SITE_NAME}`,
   },
   description:
-    "Leading pre-engineered building (PEB) and steel structure company in Bangladesh. Factory, warehouse, and commercial building design, fabrication, and erection. Based in Shyamoli, Dhaka with 500+ completed projects.",
+    "Leading pre-engineered building (PEB) and steel structure company in Bangladesh. Factory, warehouse, and commercial building design, fabrication, and erection. Based in Shyamoli, Dhaka with 150+ completed projects.",
   keywords: [
     "steel structure Bangladesh",
     "pre-engineered building",
@@ -74,7 +74,7 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     title: `${SITE_NAME} | Premium Industrial Steel Structures`,
     description:
-      "Design, fabrication, and erection of world-class pre-engineered steel buildings across Bangladesh. 500+ projects completed.",
+      "Design, fabrication, and erection of world-class pre-engineered steel buildings across Bangladesh. 150+ projects completed.",
     images: [
       {
         url: `${SITE_URL}/og-image.jpg`,
@@ -113,7 +113,7 @@ const organizationJsonLd = {
   logo: `${SITE_URL}/logo.svg`,
   description:
     "City Steel Corporation specializes in design, manufacture, supply, and erection of pre-engineered steel buildings and industrial steel structures across Bangladesh.",
-  foundingDate: "2009",
+  foundingDate: "2015",
   address: {
     "@type": "PostalAddress",
     streetAddress: "7/6, Garden Street, Ring Road, Shyamoli",
