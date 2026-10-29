@@ -6,7 +6,7 @@ import { ProjectsGalleryClient } from "@/components/site/ProjectsGalleryClient";
 
 export const metadata: Metadata = {
   title: "Our Projects — Completed & Ongoing Steel Structures",
-  description: "Explore City Steel Corporation's portfolio of 500+ completed and ongoing industrial steel structure projects across Bangladesh — warehouses, factories, and more.",
+  description: "Explore City Steel Corporation's portfolio of 150+ completed and ongoing industrial steel structure projects across Bangladesh — warehouses, factories, and more.",
   alternates: { canonical: "https://citysteelbd.com/projects" },
   openGraph: {
     title: "Our Projects | City Steel Corporation",
