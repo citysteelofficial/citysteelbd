@@ -30,12 +30,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!category) return { title: 'Category Not Found' };
 
+  // Most categories hold a single product whose detail page carries the real
+  // content. Two near-identical pages then compete for the same search terms,
+  // so point the category's canonical at that product page instead.
+  const { data: items } = await supabase
+    .from('products')
+    .select('slug')
+    .eq('category', slug)
+    .limit(2);
+  const canonicalPath =
+    items && items.length === 1 ? `/product/${items[0].slug}` : `/products/${slug}`;
+
   return {
-    title: `${category.title} | City Steel Corporation`,
-    description: `Browse our premium selection of ${category.title.toLowerCase()} for industrial steel structures, manufactured and supplied by City Steel Corporation.`,
+    title: `${category.title} Supplier in Bangladesh`,
+    description: `${category.title} for steel structures and pre-engineered buildings — manufactured and supplied across Bangladesh by City Steel Corporation. Get a quote today.`,
     alternates: {
-      canonical: `https://citysteelbd.com/products/${slug}`,
+      canonical: `https://citysteelbd.com${canonicalPath}`,
     },
+    ...(items && items.length === 0 ? { robots: { index: false, follow: true } } : {}),
   };
 }
 

@@ -22,10 +22,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .eq('slug', slug)
     .single();
     
-  if (!product) return { title: 'Product Not Found | City Steel Corporation' };
+  if (!product) return { title: 'Product Not Found' };
 
   return {
-    title: product.seo_title || `${product.title} | City Steel Corporation`,
+    title: product.seo_title || `${product.title} Price in Bangladesh`,
     description: product.seo_description || product.description,
     alternates: {
       canonical: `https://citysteelbd.com/product/${slug}`,

@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const categoryTitle = titleFromSlug(slug);
 
   return {
-    title: `${categoryTitle} | City Steel Corporation`,
+    title: `${categoryTitle} Services in Bangladesh`,
     description: `Explore our comprehensive ${categoryTitle.toLowerCase()} services for industrial steel structures.`,
     alternates: {
       canonical: `https://citysteelbd.com/services/${slug}`,

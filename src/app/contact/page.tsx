@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Contact City Steel Corporation",
     description: "Get in touch for a quote on steel structures, PEB buildings, and industrial construction.",
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "City Steel Corporation — PEB & steel structure company in Bangladesh" }],
   },
 };
 

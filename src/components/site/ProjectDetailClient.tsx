@@ -49,7 +49,7 @@ export function ProjectDetailClient({ project }: Props) {
                     <div className="flex gap-2 overflow-x-auto pb-1">
                       {allImages.map((url: string, i: number) => (
                         <button key={i} onClick={() => setActiveIndex(i)} className={`relative flex-shrink-0 h-16 w-16 rounded-lg overflow-hidden border-2 transition-all ${i === activeIndex ? 'border-primary ring-2 ring-primary/30' : 'border-transparent opacity-60 hover:opacity-100'}`}>
-                          <Image src={url} alt="" fill className="object-cover" />
+                          <Image src={url} alt={`${project.title} — steel structure photo ${i + 1}`} fill className="object-cover" />
                         </button>
                       ))}
                     </div>
