@@ -62,7 +62,12 @@ export const metadata: Metadata = {
     telephone: false,
   },
   verification: {
-    google: "UKC7sQXi_DKihfL_WzDzxVxO88Bm0gTgO4sqe4S4K20",
+    // Keep both tokens: the first is the original Search Console owner, the
+    // second is City Steel's own Google account (added Nov 2026).
+    google: [
+      "UKC7sQXi_DKihfL_WzDzxVxO88Bm0gTgO4sqe4S4K20",
+      "WRISFtfEAGkHy2gBVscBULl4k0zRAMELg6jELqO3N_E",
+    ],
   },
   alternates: {
     canonical: SITE_URL,
