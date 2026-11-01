@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Our Products | City Steel Corporation",
     description: "A complete range of steel building components engineered for industrial performance and longevity.",
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "City Steel Corporation — PEB & steel structure company in Bangladesh" }],
   },
 };
 
