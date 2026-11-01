@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Career Opportunities | City Steel Corporation",
     description: "Join a team driven by craftsmanship and innovation in industrial steel structures.",
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "City Steel Corporation — PEB & steel structure company in Bangladesh" }],
   },
 };
 
