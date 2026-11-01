@@ -100,6 +100,9 @@ export function HomeClient({ latestBlogs, settings, latestProjects = [] }: HomeC
             {/* Giant Brand Name */}
             <h1 className="font-display text-4xl font-black uppercase leading-[1.05] text-[oklch(0.99_0_0)] sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl tracking-tight">
               {settings?.hero_top_text ? settings.hero_top_text.split(' · ')[0] : 'City Steel Corporation'}
+              <span className="mt-3 block font-sans text-sm font-bold normal-case tracking-[0.15em] text-[oklch(0.85_0_0)] sm:text-base lg:text-lg">
+                PEB &amp; Steel Structure Company in Bangladesh
+              </span>
             </h1>
 
             {/* Sub-tag / Info */}
