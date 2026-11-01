@@ -32,7 +32,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   // Dynamic: Products (individual items)
-  const { data: products } = await supabase.from('products').select('slug, created_at');
+  const { data: products } = await supabase.from('products').select('slug, created_at, category');
   const productPages: MetadataRoute.Sitemap = (products || []).map((p) => ({
     url: `${BASE_URL}/product/${p.slug}`,
     lastModified: new Date(p.created_at),
@@ -42,7 +42,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Dynamic: Product Categories
   const { data: categories } = await supabase.from('product_categories').select('slug, created_at');
-  const categoryPages: MetadataRoute.Sitemap = (categories || []).map((c) => ({
+  // Only list categories that hold two or more products. Empty categories are
+  // noindexed, and single-product categories canonicalise to the product page
+  // (see src/app/products/[slug]/page.tsx), so listing them would only send
+  // Google URLs it is told not to index.
+  const productCount = new Map<string, number>();
+  for (const p of products || []) {
+    if (p.category) productCount.set(p.category, (productCount.get(p.category) || 0) + 1);
+  }
+  const categoryPages: MetadataRoute.Sitemap = (categories || [])
+    .filter((c) => (productCount.get(c.slug) || 0) >= 2)
+    .map((c) => ({
     url: `${BASE_URL}/products/${c.slug}`,
     lastModified: new Date(c.created_at),
     changeFrequency: 'monthly' as const,
