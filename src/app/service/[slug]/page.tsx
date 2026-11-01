@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!service) return { title: 'Service Not Found' };
 
   return {
-    title: service.seo_title || `${service.title} | City Steel Corporation`,
+    title: service.seo_title || `${service.title} in Bangladesh`,
     description: service.seo_description || service.description,
     alternates: {
       canonical: `https://citysteelbd.com/service/${slug}`,
