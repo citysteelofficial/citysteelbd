@@ -73,8 +73,26 @@ redirects first.
 | `/career` | static, 60s ISR | `job_circulars` where `is_active` and not past `deadline` |
 | `/contact` | static, 60s ISR | form writes to `contact_messages` |
 | `/admin/**` | client-rendered | protected by Supabase Auth |
+| `/cost-calculator` | static, 60s ISR | rates in `src/lib/costRates.ts`; leads post to `/api/contact` |
+| `/steel-building/[area]` | static params, 60s ISR | copy in `src/lib/areas.ts`; projects matched by `location` |
 | `/sitemap.xml` | dynamic (per request) | generated from all published content |
 | `/robots.txt` | static | disallows `/admin` |
+
+### Structured data (JSON-LD)
+
+`src/app/layout.tsx` emits Organization (`@id` `/#organization`) and
+LocalBusiness on every page. `src/components/site/JsonLd.tsx` provides
+`<JsonLd>`, `breadcrumbLd()` and `ORG_REF`, used for: BreadcrumbList on
+product, service and project pages; Product on `/product/[slug]`; Service on
+`/service/[slug]`; Service + FAQPage on `/steel-building/[area]`. Product schema
+has no `offers` on purpose — do not add prices that are not real.
+
+### Service-area pages
+
+`/steel-building/{gazipur|savar-ashulia|narayanganj|narsingdi|dhaka}`. To add
+an area, add it to `AREAS` in `src/lib/areas.ts` **and** to `AREA_LINKS` in
+`src/lib/areaLinks.ts` (the footer is a client component, so it imports only
+the small link list). Only add areas where real projects exist.
 
 ### Product links point at the canonical URL
 
