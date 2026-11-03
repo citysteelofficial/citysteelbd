@@ -2,6 +2,7 @@ import { supabase } from '@/lib/supabase';
 import { notFound } from 'next/navigation';
 import { ProjectDetailClient } from '@/components/site/ProjectDetailClient';
 import { Metadata } from 'next';
+import { JsonLd, breadcrumbLd } from '@/components/site/JsonLd';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -34,5 +35,10 @@ export default async function ProjectDetailPage({ params }: Props) {
   
   if (error || !project) notFound();
 
-  return <ProjectDetailClient project={project} />;
+  return (
+    <>
+      <JsonLd data={breadcrumbLd([['Home', '/'], ['Projects', '/projects'], [project.title, `/project/${slug}`]])} />
+      <ProjectDetailClient project={project} />
+    </>
+  );
 }
