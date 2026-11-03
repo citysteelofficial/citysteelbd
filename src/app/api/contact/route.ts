@@ -54,7 +54,7 @@ async function sendLeadEmail(lead: Lead, page: string): Promise<void> {
   const rows: Array<[string, string]> = [
     ['Name', lead.name],
     ['Phone', lead.phone || '—'],
-    ['Email', lead.email],
+    ['Email', lead.email || '—'],
     ['Subject', lead.subject || '—'],
     ['Page', page || '/contact'],
   ];
@@ -73,7 +73,7 @@ async function sendLeadEmail(lead: Lead, page: string): Promise<void> {
     <p style="margin-top:20px;font-size:14px">
       ${lead.phone ? `<a href="tel:${escapeHtml(lead.phone)}">Call</a> · ` : ''}
       ${waDigits.length >= 10 ? `<a href="https://wa.me/${waDigits}">WhatsApp</a> · ` : ''}
-      <a href="mailto:${escapeHtml(lead.email)}">Reply by email</a> ·
+      ${lead.email ? `<a href="mailto:${escapeHtml(lead.email)}">Reply by email</a> · ` : ''}
       <a href="https://citysteelbd.com/admin/messages">Open admin</a>
     </p>
   </div>`;
@@ -87,7 +87,7 @@ async function sendLeadEmail(lead: Lead, page: string): Promise<void> {
       body: JSON.stringify({
         from: process.env.LEAD_FROM_EMAIL || 'City Steel Website <onboarding@resend.dev>',
         to: to.split(',').map((s) => s.trim()).filter(Boolean),
-        reply_to: lead.email,
+        ...(lead.email ? { reply_to: lead.email } : {}),
         subject: `New lead: ${lead.name}${lead.subject ? ` — ${lead.subject}` : ''}`.slice(0, 180),
         html,
       }),
@@ -131,7 +131,10 @@ export async function POST(request: Request) {
   };
 
   if (lead.name.length < 2) return Response.json({ ok: false, error: 'Please enter your full name.' }, { status: 400 });
-  if (!EMAIL_PATTERN.test(lead.email)) return Response.json({ ok: false, error: 'Please enter a valid email address.' }, { status: 400 });
+  // Email is optional when a usable phone number is given (cost calculator leads).
+  const phoneDigits = lead.phone.replace(/\D/g, '');
+  if (lead.email && !EMAIL_PATTERN.test(lead.email)) return Response.json({ ok: false, error: 'Please enter a valid email address.' }, { status: 400 });
+  if (!lead.email && phoneDigits.length < 10) return Response.json({ ok: false, error: 'Please enter a valid email address or phone number.' }, { status: 400 });
   if (lead.message.length < 10) return Response.json({ ok: false, error: 'Please describe your requirement in at least 10 characters.' }, { status: 400 });
 
   const { error } = await supabase.from('contact_messages').insert([{
