@@ -7,7 +7,7 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Menu, X, ChevronDown } from "lucide-react";
 import Image from "next/image";
-import logo from "@/assets/logo.svg";
+import logo from "@/assets/logo.png";
 
 const nav = [
   { to: "/", label: "Home" },
