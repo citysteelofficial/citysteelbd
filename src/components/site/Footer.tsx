@@ -76,11 +76,11 @@ export function Footer() {
         <div>
           <h4 className="mb-4 text-sm font-bold tracking-widest text-primary">PRODUCTS</h4>
           <ul className="space-y-2 text-sm text-[oklch(0.7_0_0)]">
-            <li><Link href="/products/steel-column" className="transition-colors hover:text-[oklch(0.98_0_0)]">Steel Column</Link></li>
-            <li><Link href="/products/steel-beam" className="transition-colors hover:text-[oklch(0.98_0_0)]">Steel Beam</Link></li>
-            <li><Link href="/products/purlin" className="transition-colors hover:text-[oklch(0.98_0_0)]">Purlin</Link></li>
-            <li><Link href="/products/industrial-roof-sheet" className="transition-colors hover:text-[oklch(0.98_0_0)]">Industrial Roof Sheet</Link></li>
-            <li><Link href="/products/industrial-deck-sheet" className="transition-colors hover:text-[oklch(0.98_0_0)]">Industrial Deck Sheet</Link></li>
+            <li><Link href="/product/steel-column" className="transition-colors hover:text-[oklch(0.98_0_0)]">Steel Column</Link></li>
+            <li><Link href="/product/steel-beam" className="transition-colors hover:text-[oklch(0.98_0_0)]">Steel Beam</Link></li>
+            <li><Link href="/product/purlin" className="transition-colors hover:text-[oklch(0.98_0_0)]">Purlin</Link></li>
+            <li><Link href="/product/industrial-roof-sheet" className="transition-colors hover:text-[oklch(0.98_0_0)]">Industrial Roof Sheet</Link></li>
+            <li><Link href="/product/industrial-deck-sheet" className="transition-colors hover:text-[oklch(0.98_0_0)]">Industrial Deck Sheet</Link></li>
           </ul>
         </div>
 
