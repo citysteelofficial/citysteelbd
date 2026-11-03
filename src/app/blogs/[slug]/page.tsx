@@ -83,7 +83,7 @@ export default async function BlogDetailsPage({ params }: Props) {
     publisher: {
       "@type": "Organization",
       name: "City Steel Corporation",
-      logo: { "@type": "ImageObject", url: "https://citysteelbd.com/logo.svg" },
+      logo: { "@type": "ImageObject", url: "https://citysteelbd.com/logo.png" },
     },
     mainEntityOfPage: `https://citysteelbd.com/blogs/${slug}`,
   };
