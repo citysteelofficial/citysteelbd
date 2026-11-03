@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next';
 import { supabase } from '@/lib/supabase';
 import { cleanSlug } from '@/lib/slug';
+import { AREAS } from '@/lib/areas';
 
 const BASE_URL = 'https://citysteelbd.com';
 
@@ -23,6 +24,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/blogs`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },
     { url: `${BASE_URL}/contact`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.6 },
     { url: `${BASE_URL}/cost-calculator`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+    ...AREAS.map((a) => ({ url: `${BASE_URL}/steel-building/${a.slug}`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.8 })),
   ];
 
   // Dynamic: Projects
