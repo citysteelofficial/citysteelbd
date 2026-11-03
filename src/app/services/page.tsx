@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabase";
 
 export const metadata: Metadata = {
   title: "Services — Steel Structure Design, Fabrication & Erection",
-  description: "Steel structure services from City Steel Corporation: structural design & drawing, architectural design, civil construction, steel building product supply, interior solutions, and complete Design & Build packages across Bangladesh.",
+  description: "Steel structure services in Bangladesh: PEB design & build, structural and architectural design, civil construction, product supply and interior solutions.",
   alternates: { canonical: "https://citysteelbd.com/services" },
   openGraph: {
     title: "Our Services | City Steel Corporation",
