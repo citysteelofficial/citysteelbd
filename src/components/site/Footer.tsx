@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Mail, Phone, MapPin, Clock } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { AREA_LINKS } from "@/lib/areaLinks";
 
 const FACEBOOK_URL = "https://www.facebook.com/profile.php?id=61573880256953";
 
@@ -115,6 +116,16 @@ export function Footer() {
             </li>
           </ul>
         </div>
+      </div>
+      <div className="border-t border-[oklch(0.98_0_0/0.1)]">
+        <nav aria-label="Service areas" className="container-x flex flex-wrap items-center gap-x-4 gap-y-2 py-4 text-xs text-[oklch(0.6_0_0)]">
+          <span className="font-bold uppercase tracking-widest text-primary">Service areas</span>
+          {AREA_LINKS.map((a) => (
+            <Link key={a.slug} href={`/steel-building/${a.slug}`} className="transition-colors hover:text-[oklch(0.98_0_0)]">
+              Steel building in {a.name}
+            </Link>
+          ))}
+        </nav>
       </div>
       <div className="border-t border-[oklch(0.98_0_0/0.1)]">
         <div className="container-x flex flex-col items-center justify-between gap-3 py-6 text-xs uppercase tracking-widest text-[oklch(0.6_0_0)] sm:flex-row">
