@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Lock, Eye, EyeOff, Mail } from 'lucide-react';
 import Image from 'next/image';
-import logo from '@/assets/logo.svg';
+import logo from '@/assets/logo.png';
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('');

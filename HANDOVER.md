@@ -306,9 +306,12 @@ rediscover them.
    key plus rate limiting would close the direct-API spam vector.
 3. **No CV upload for job applications.** Applicants are funnelled to the
    contact form. A `job_applications` table plus a Storage bucket would fix it.
-4. **`logo.svg` is 306 KB** (auto-traced vector, `public/` and `src/assets/`)
-   and `og-image.jpg` is 658 KB. Both ship on page load and would benefit from
-   SVGO / recompression.
+4. **Logo and share image were heavy.** `logo.svg` (306 KB) only wrapped two
+   embedded 1600 px PNGs, so it was replaced by `logo.png` (~15 KB, 960x481,
+   transparent) in `src/assets/` and `public/`; `next/image` serves it as
+   WebP/AVIF. `og-image.jpg` was recompressed to 1200x630 (~90 KB) to match the
+   size declared in every page's Open Graph metadata. The old `logo.svg`
+   files are unused and can be deleted.
 5. **Data hygiene, fixable by the client in `/admin`:**
    - Service "Civil Construction" has the leftover slug `test-service-jetski`
    - Service slug `Complete-solution-to-the-steel-structure` has a capital letter

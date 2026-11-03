@@ -112,7 +112,7 @@ const organizationJsonLd = {
   "@type": "Organization",
   name: SITE_NAME,
   url: SITE_URL,
-  logo: `${SITE_URL}/logo.svg`,
+  logo: `${SITE_URL}/logo.png`,
   description:
     "City Steel Corporation specializes in design, manufacture, supply, and erection of pre-engineered steel buildings and industrial steel structures across Bangladesh.",
   foundingDate: "2015",
