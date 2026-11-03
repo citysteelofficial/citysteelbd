@@ -213,19 +213,32 @@ There is no self-service signup.
 
 ## 8. Contact form
 
-`src/components/site/ContactClient.tsx` inserts into `contact_messages` and
-then opens a prefilled WhatsApp thread to `+8801711787556`. If the browser
-blocks the popup, a manual "Also send via WhatsApp" link is shown instead.
+`src/components/site/ContactClient.tsx` posts to **`/api/contact`**
+(`src/app/api/contact/route.ts`), which validates the fields again, throttles
+repeat senders (5 per 10 minutes per IP, per server instance), inserts into
+`contact_messages`, and then emails the lead to the office. After a successful
+send the browser also opens a prefilled WhatsApp thread to `+8801711787556`; if
+the popup is blocked, a manual "Also send via WhatsApp" link is shown.
 
-Spam defences are client-side: a visually hidden honeypot field
-(`company_website`) and a minimum fill time of 3 seconds. Both fail silently so
-bots get no feedback. Submissions are also length- and format-validated before
-insert.
+**Lead email alerts** are sent through Resend and switch on only when these
+Vercel environment variables exist (Production):
 
-This does **not** stop a determined attacker posting to the Supabase REST API
-directly — the anon key is public. Hardening that further means moving the
-insert behind a route handler with a service-role key and revoking the public
-insert policy. See "Known gaps" below.
+```
+RESEND_API_KEY=re_...                       # resend.com → API Keys
+LEAD_NOTIFY_EMAIL=citysteel.corporation@gmail.com   # comma-separate for several
+LEAD_FROM_EMAIL=City Steel Website <leads@citysteelbd.com>   # optional, needs the domain verified in Resend
+```
+
+Without `LEAD_FROM_EMAIL` the sender is `onboarding@resend.dev`, which Resend
+only allows to deliver to the account owner's own address — fine for internal
+alerts. If the key is missing or Resend is down, the message is still saved and
+the visitor still sees success; the failure is only logged.
+
+Spam defences: a visually hidden honeypot field (`company_website`, checked on
+both client and server) and a minimum fill time of 3 seconds on the client.
+The `Public insert contact` RLS policy still exists, so someone posting directly
+to the Supabase REST API can bypass the route (no email is sent for those rows).
+Revoking that policy would require a service-role key on the server.
 
 The Career page's Apply button links to `/contact?subject=Job Application: <title>`
 and the form prefills that subject on mount.
@@ -302,8 +315,8 @@ rediscover them.
 
 1. **No server-side admin route protection.** Requires the `@supabase/ssr`
    cookie migration described in §7. Would log every admin out once on deploy.
-2. **Contact form insert is client-side.** A route handler with a service-role
-   key plus rate limiting would close the direct-API spam vector.
+2. **Contact form RLS insert policy is still public.** Inserts now go through
+   `/api/contact`, but closing the direct-API vector needs a service-role key.
 3. **No CV upload for job applications.** Applicants are funnelled to the
    contact form. A `job_applications` table plus a Storage bucket would fix it.
 4. **Logo and share image were heavy.** `logo.svg` (306 KB) only wrapped two
