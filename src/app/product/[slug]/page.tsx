@@ -6,6 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronRight, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { sanitizeHtml } from '@/lib/sanitize';
+import { JsonLd, breadcrumbLd, plainText, ORG_REF } from '@/components/site/JsonLd';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -64,6 +65,22 @@ export default async function SingleProductPage({ params }: Props) {
 
   return (
     <PageShell>
+      <JsonLd
+        data={[
+          breadcrumbLd([['Home', '/'], ['Products', '/products'], [product.title, `/product/${slug}`]]),
+          {
+            '@context': 'https://schema.org',
+            '@type': 'Product',
+            name: product.title,
+            description: plainText(product.description || product.content),
+            image: allImages.slice(0, 5),
+            url: `https://citysteelbd.com/product/${slug}`,
+            category: 'Steel building components',
+            brand: { '@type': 'Brand', name: 'City Steel' },
+            manufacturer: ORG_REF,
+          },
+        ]}
+      />
       {/* Breadcrumb Navigation */}
       <div className="bg-muted py-4 border-b border-border">
         <div className="container-x flex items-center text-sm text-muted-foreground">
