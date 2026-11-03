@@ -4,6 +4,7 @@ import { ServiceDetailGallery } from '@/components/site/ServiceDetailGallery';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { sanitizeHtml } from '@/lib/sanitize';
+import { JsonLd, breadcrumbLd, plainText, ORG_REF } from '@/components/site/JsonLd';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -48,6 +49,22 @@ export default async function ServiceDetailsPage({ params }: Props) {
 
   return (
     <PageShell>
+      <JsonLd
+        data={[
+          breadcrumbLd([['Home', '/'], ['Services', '/services'], [service.title, `/service/${slug}`]]),
+          {
+            '@context': 'https://schema.org',
+            '@type': 'Service',
+            name: service.title,
+            description: plainText(service.description || service.content),
+            serviceType: service.title,
+            provider: ORG_REF,
+            areaServed: { '@type': 'Country', name: 'Bangladesh' },
+            url: `https://citysteelbd.com/service/${slug}`,
+            ...(images[0] ? { image: images[0] } : {}),
+          },
+        ]}
+      />
       <PageHeader
         eyebrow="Service Details"
         title={service.title}
