@@ -3,6 +3,7 @@ import "./globals.css";
 import { Header } from "@/components/site/Header";
 import { withCategoryHrefs } from "@/lib/productLinks";
 import { Footer } from "@/components/site/Footer";
+import { FloatingContact } from "@/components/site/FloatingContact";
 import { supabase } from "@/lib/supabase";
 import Script from "next/script";
 
@@ -238,6 +239,7 @@ export default async function RootLayout({
         <Header productsMenu={productsMenu} servicesMenu={servicesMenu} />
         {children}
         <Footer />
+        <FloatingContact />
       </body>
     </html>
   );
