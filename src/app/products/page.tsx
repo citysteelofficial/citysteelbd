@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { PageShell, PageHeader } from "@/components/site/PageShell";
 import { supabase } from "@/lib/supabase";
+import { withCategoryHrefs } from "@/lib/productLinks";
 
 export const metadata: Metadata = {
   title: "Products — Industrial Steel Building Components",
@@ -18,12 +19,15 @@ export const metadata: Metadata = {
 export const revalidate = 60;
 
 export default async function ProductsPage() {
-  const { data: categories } = await supabase
-    .from("product_categories")
-    .select("title, slug")
-    .order("created_at", { ascending: true });
+  const [{ data: categories }, { data: products }] = await Promise.all([
+    supabase
+      .from("product_categories")
+      .select("title, slug")
+      .order("created_at", { ascending: true }),
+    supabase.from("products").select("slug, category"),
+  ]);
 
-  const items = categories || [];
+  const items = withCategoryHrefs(categories || [], products);
 
   return (
     <PageShell>
@@ -48,7 +52,7 @@ export default async function ProductsPage() {
             {items.map((c, i) => (
               <Link
                 key={c.slug}
-                href={`/products/${c.slug}`}
+                href={c.href}
                 className="group relative bg-background p-10 transition-all hover:bg-surface"
               >
                 <div className="mb-6 font-display text-6xl font-black text-primary/20 transition-colors group-hover:text-primary/40">

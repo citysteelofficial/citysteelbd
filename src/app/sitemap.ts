@@ -4,10 +4,12 @@ import { cleanSlug } from '@/lib/slug';
 
 const BASE_URL = 'https://citysteelbd.com';
 
-// Without this the sitemap is prerendered once at build time, so content the
-// client publishes through the admin panel never reaches search engines until
-// the next deploy. One hour keeps it fresh without hammering Supabase.
-export const revalidate = 3600;
+// Render on every request. With `revalidate = 3600` the Supabase fetches were
+// also held in the Next data cache, so slug changes made in /admin kept
+// showing the old URLs to Google (e.g. /service/consultany and the old project
+// slugs were still listed after being renamed). The sitemap is five small
+// queries and is only requested by crawlers, so serving it live is cheap.
+export const dynamic = 'force-dynamic';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Static pages

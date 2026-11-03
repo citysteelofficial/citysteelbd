@@ -3,7 +3,7 @@
 Living reference for the citysteelbd.com codebase. Update it when architecture,
 deployment, or data conventions change.
 
-**Last updated:** 2026-08-11
+**Last updated:** 2026-11-03
 
 ---
 
@@ -73,8 +73,17 @@ redirects first.
 | `/career` | static, 60s ISR | `job_circulars` where `is_active` and not past `deadline` |
 | `/contact` | static, 60s ISR | form writes to `contact_messages` |
 | `/admin/**` | client-rendered | protected by Supabase Auth |
-| `/sitemap.xml` | 1h ISR | generated from all published content |
+| `/sitemap.xml` | dynamic (per request) | generated from all published content |
 | `/robots.txt` | static | disallows `/admin` |
+
+### Product links point at the canonical URL
+
+Most product categories hold a single product, and `/products/[slug]` then
+canonicalises to that product's `/product/[slug]` page. Internal links follow
+the canonical: `src/lib/productLinks.ts` (`withCategoryHrefs`) resolves each
+category to `/product/{slug}` (one product), `/products/{slug}` (two or more),
+or drops it (empty). The header menu (via `layout.tsx`) and the `/products`
+listing both use it. The footer's product links are hard-coded to `/product/`.
 
 ### Why almost every page exports `revalidate`
 
@@ -87,8 +96,9 @@ deploy. When you add a new page, export `revalidate` from it too:
 export const revalidate = 60;
 ```
 
-This applies to `src/app/sitemap.ts` as well; without it, content the client
-publishes never reaches Google until someone redeploys.
+`src/app/sitemap.ts` is the exception: it uses `dynamic = 'force-dynamic'`.
+With `revalidate = 3600` the Supabase fetches were also held in the data cache,
+and renamed slugs kept appearing in the sitemap long after the change.
 
 ---
 

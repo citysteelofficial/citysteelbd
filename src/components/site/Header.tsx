@@ -96,7 +96,9 @@ export function Header({ productsMenu = [], servicesMenu = [] }: HeaderProps) {
 
   const isActive = (to: string) => {
     if (to === "/") return pathname === "/";
-    return pathname.startsWith(to);
+    // Detail pages live under the singular path (/product/x, /service/x,
+    // /project/x), so match those against their plural nav entry too.
+    return pathname.startsWith(to) || pathname.startsWith(`${to.replace(/s$/, "")}/`);
   };
 
   // Mobile drawer content — rendered via portal to escape header's backdrop-filter containing block
@@ -176,7 +178,7 @@ export function Header({ productsMenu = [], servicesMenu = [] }: HeaderProps) {
                           }
 
                           const linkHref = n.label === "Products"
-                            ? `/products/${item.slug || 'demo'}`
+                            ? (item.href || `/products/${item.slug || 'demo'}`)
                             : item.isDynamicService
                               ? `/service/${item.slug || 'demo'}`
                               : `/services/${item.slug || 'demo'}`;
@@ -268,7 +270,7 @@ export function Header({ productsMenu = [], servicesMenu = [] }: HeaderProps) {
                         }
 
                         const linkHref = n.label === "Products"
-                          ? `/products/${item.slug || 'demo'}`
+                          ? (item.href || `/products/${item.slug || 'demo'}`)
                           : item.isDynamicService
                             ? `/service/${item.slug || 'demo'}`
                             : `/services/${item.slug || 'demo'}`;

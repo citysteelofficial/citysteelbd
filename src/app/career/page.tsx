@@ -10,7 +10,7 @@ export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Career — Job Openings at City Steel Corporation",
-  description: "Join City Steel Corporation — explore current job openings for engineers, fabricators, project managers, and more. Build your career in the steel construction industry.",
+  description: "Job openings at City Steel Corporation for engineers, fabricators and project managers. Build your career in steel construction in Dhaka, Bangladesh.",
   alternates: { canonical: "https://citysteelbd.com/career" },
   openGraph: {
     title: "Career Opportunities | City Steel Corporation",
