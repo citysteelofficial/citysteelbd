@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Header } from "@/components/site/Header";
+import { withCategoryHrefs } from "@/lib/productLinks";
 import { Footer } from "@/components/site/Footer";
 import { supabase } from "@/lib/supabase";
 import Script from "next/script";
@@ -186,7 +187,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   // Fetch menu data for Header (SSR)
-  const [categoriesRes, servicesRes] = await Promise.all([
+  const [categoriesRes, servicesRes, productsRes] = await Promise.all([
     supabase
       .from("product_categories")
       .select("title, slug")
@@ -195,9 +196,10 @@ export default async function RootLayout({
       .from("services")
       .select("title, slug")
       .order("created_at", { ascending: false }),
+    supabase.from("products").select("slug, category"),
   ]);
 
-  const productsMenu = categoriesRes.data || [];
+  const productsMenu = withCategoryHrefs(categoriesRes.data || [], productsRes.data);
   const servicesMenu = servicesRes.data || [];
 
   return (
