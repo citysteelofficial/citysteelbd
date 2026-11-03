@@ -68,6 +68,7 @@ export function Footer() {
             <li><Link href="/about" className="transition-colors hover:text-[oklch(0.98_0_0)]">About Us</Link></li>
             <li><Link href="/services" className="transition-colors hover:text-[oklch(0.98_0_0)]">Services</Link></li>
             <li><Link href="/projects" className="transition-colors hover:text-[oklch(0.98_0_0)]">Our Projects</Link></li>
+            <li><Link href="/cost-calculator" className="transition-colors hover:text-[oklch(0.98_0_0)]">Cost Calculator</Link></li>
             <li><Link href="/blogs" className="transition-colors hover:text-[oklch(0.98_0_0)]">Blog & Insights</Link></li>
             <li><Link href="/career" className="transition-colors hover:text-[oklch(0.98_0_0)]">Career</Link></li>
           </ul>

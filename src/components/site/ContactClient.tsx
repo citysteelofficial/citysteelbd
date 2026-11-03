@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Mail, Phone, Send, Loader2, CheckCircle, AlertCircle, Clock, Building2, Factory } from "lucide-react";
 import { PageShell, PageHeader } from "@/components/site/PageShell";
-import { supabase } from "@/lib/supabase";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const MIN_FILL_SECONDS = 3;
@@ -82,18 +81,33 @@ export function ContactClient() {
     setStatus('loading');
     setErrorMsg('');
 
-    const { error } = await supabase.from('contact_messages').insert([{
-      name: formData.name.trim(),
-      email: formData.email.trim(),
-      phone: formData.phone.trim() || null,
-      subject: formData.subject.trim() || null,
-      message: formData.message.trim(),
-    }]);
+    // Saved (and emailed to the office) by src/app/api/contact/route.ts.
+    let error: string | null = null;
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          phone: formData.phone.trim(),
+          subject: formData.subject.trim(),
+          message: formData.message.trim(),
+          company_website: honeypot,
+          page: window.location.pathname,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.ok) {
+        error = data.error || 'Message could not be sent. Please try again or call us directly.';
+      }
+    } catch {
+      error = 'Message could not be sent. Please check your connection or call us directly.';
+    }
 
     if (error) {
       setStatus('error');
-      setErrorMsg('Message could not be sent. Please try again or call us directly.');
-      console.error('Contact form error:', error);
+      setErrorMsg(error);
     } else {
       // Create WhatsApp message format
       const waMessage = `*New Contact Request*
