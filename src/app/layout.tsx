@@ -171,8 +171,8 @@ const localBusinessJsonLd = {
     {
       "@type": "OpeningHoursSpecification",
       dayOfWeek: ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"],
-      opens: "09:00",
-      closes: "18:00",
+      opens: "08:00",
+      closes: "20:00",
     },
   ],
   priceRange: "$$",
