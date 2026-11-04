@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Mail, Phone, MapPin, Clock } from "lucide-react";
+import { Mail, Phone, MapPin, Clock, Download } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 const FACEBOOK_URL = "https://www.facebook.com/profile.php?id=61573880256953";
@@ -48,6 +48,15 @@ export function Footer() {
               <div>Friday: Closed</div>
             </div>
           </div>
+          {/* Company Profile download */}
+          <a
+            href="/City-Steel-Corporation-Company-Profile.pdf"
+            download
+            className="mt-5 inline-flex items-center gap-2 bg-gradient-primary px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-red transition-transform hover:scale-105"
+          >
+            <Download className="h-4 w-4" />
+            Download Company Profile
+          </a>
           {/* Social Links */}
           <div className="mt-5 flex items-center gap-3">
             <a
@@ -71,6 +80,7 @@ export function Footer() {
             <li><Link href="/cost-calculator" className="transition-colors hover:text-[oklch(0.98_0_0)]">Cost Calculator</Link></li>
             <li><Link href="/blogs" className="transition-colors hover:text-[oklch(0.98_0_0)]">Blog & Insights</Link></li>
             <li><Link href="/career" className="transition-colors hover:text-[oklch(0.98_0_0)]">Career</Link></li>
+            <li><a href="/City-Steel-Corporation-Company-Profile.pdf" download className="transition-colors hover:text-[oklch(0.98_0_0)]">Company Profile (PDF)</a></li>
           </ul>
         </div>
 

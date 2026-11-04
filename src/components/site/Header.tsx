@@ -5,9 +5,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, Download } from "lucide-react";
 import Image from "next/image";
 import logo from "@/assets/logo.png";
+
+const PROFILE_PDF = "/City-Steel-Corporation-Company-Profile.pdf";
 
 const nav = [
   { to: "/", label: "Home" },
@@ -214,7 +216,16 @@ export function Header({ productsMenu = [], servicesMenu = [] }: HeaderProps) {
               })}
             </div>
 
-            <div className="mt-auto border-t border-border p-6">
+            <div className="mt-auto flex flex-col gap-3 border-t border-border p-6">
+              <a
+                href={PROFILE_PDF}
+                download
+                onClick={() => setOpen(false)}
+                className="flex w-full items-center justify-center gap-2 border-2 border-primary px-5 py-3 text-sm font-bold uppercase tracking-wider text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+              >
+                <Download className="h-4 w-4" />
+                Company Profile
+              </a>
               <Link
                 href="/contact"
                 onClick={() => setOpen(false)}
@@ -302,9 +313,19 @@ export function Header({ productsMenu = [], servicesMenu = [] }: HeaderProps) {
                 </Link>
               );
             })}
+            <a
+              href={PROFILE_PDF}
+              download
+              title="Download Company Profile (PDF)"
+              aria-label="Download Company Profile (PDF)"
+              className="ml-4 inline-flex items-center gap-2 border-2 border-primary px-4 py-2 text-sm font-bold uppercase tracking-wider text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
+            >
+              <Download className="h-4 w-4" />
+              <span className="hidden xl:inline">Profile</span>
+            </a>
             <Link
               href="/contact"
-              className="ml-4 inline-flex items-center bg-gradient-primary px-5 py-2.5 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-red transition-all hover:scale-105"
+              className="ml-2 inline-flex items-center bg-gradient-primary px-5 py-2.5 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-red transition-all hover:scale-105"
             >
               Get Quote
             </Link>
