@@ -196,7 +196,7 @@ ${formData.message.trim()}`;
               </div>
               <div>
                 <div className="text-xs font-bold uppercase tracking-widest text-primary">Business Hours</div>
-                <div className="mt-1 text-foreground">Saturday – Thursday: 9:00 AM – 6:00 PM</div>
+                <div className="mt-1 text-foreground">Saturday – Thursday: 8:00 AM – 8:00 PM</div>
                 <div className="text-muted-foreground">Friday: Closed</div>
               </div>
             </div>
@@ -289,6 +289,34 @@ ${formData.message.trim()}`;
               </div>
             )}
           </form>
+        </div>
+
+        {/* Google Map — corporate office */}
+        <div className="container-x mt-16">
+          <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <h2 className="font-display text-3xl font-bold uppercase">
+              Find <span className="text-gradient-red">Us</span>
+            </h2>
+            <a
+              href="https://www.google.com/maps/search/?api=1&query=City+Steel+Corporation%2C+7%2F6+Garden+Street%2C+Ring+Road%2C+Shyamoli%2C+Dhaka+1207"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-bold uppercase tracking-wider text-primary hover:underline"
+            >
+              Get Directions on Google Maps →
+            </a>
+          </div>
+          <div className="overflow-hidden border border-border bg-surface">
+            <iframe
+              title="City Steel Corporation — Corporate Office location on Google Maps"
+              src="https://www.google.com/maps?q=City+Steel+Corporation,+7/6+Garden+Street,+Ring+Road,+Shyamoli,+Dhaka+1207&hl=en&z=16&output=embed"
+              className="block h-[420px] w-full"
+              style={{ border: 0 }}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
+          </div>
         </div>
       </section>
     </PageShell>

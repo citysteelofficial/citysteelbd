@@ -44,7 +44,7 @@ export function Footer() {
           <div className="mt-4 flex items-start gap-2 text-sm text-[oklch(0.7_0_0)]">
             <Clock className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
             <div>
-              <div>Sat – Thu: 9:00 AM – 6:00 PM</div>
+              <div>Sat – Thu: 8:00 AM – 8:00 PM</div>
               <div>Friday: Closed</div>
             </div>
           </div>
